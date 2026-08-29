@@ -41,7 +41,7 @@ function Admission() {
           </p>
           <div className="flex flex-wrap gap-3">
             <a
-              href={`tel:${CONTACT.phones[0].replace(/\s/g, "")}`}
+              href={`tel:${CONTACT.phones[0]?.replace(/\s/g, "")}`}
               className="rounded-full bg-primary px-6 py-3 font-display text-sm text-primary-foreground"
             >
               Call the office
