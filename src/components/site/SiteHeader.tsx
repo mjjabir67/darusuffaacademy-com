@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/daru-logo.jpg.asset.json";
+import logo from "@/assets/darusuffa-logo.jpg.asset.json";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -29,9 +29,9 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
           <img
             src={logo.url}
             alt="Darusuffa Academy logo"
-            width={160}
-            height={50}
-            className={`h-9 w-auto ${overlay ? "rounded-md bg-white/90 px-2 py-1" : ""}`}
+            width={384}
+            height={126}
+            className={`h-10 w-auto ${overlay ? "rounded-md bg-white px-3 py-1.5 shadow-sm" : ""}`}
           />
         </Link>
 
