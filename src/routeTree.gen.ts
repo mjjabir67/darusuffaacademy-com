@@ -13,9 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademicRouteImport } from './routes/academic'
 import { Route as AdmissionRouteImport } from './routes/admission'
+import { Route as ArtLiteratureRouteImport } from './routes/art-literature'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as LanguageDoorRouteImport } from './routes/language-door'
 import { Route as MediaRouteImport } from './routes/media'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as SsfDawaRouteImport } from './routes/ssf-dawa'
 import { Route as StaffRouteImport } from './routes/staff'
 
 const IndexRoute = IndexRouteImport.update({
@@ -38,9 +41,19 @@ const AdmissionRoute = AdmissionRouteImport.update({
   path: '/admission',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArtLiteratureRoute = ArtLiteratureRouteImport.update({
+  id: '/art-literature',
+  path: '/art-literature',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LanguageDoorRoute = LanguageDoorRouteImport.update({
+  id: '/language-door',
+  path: '/language-door',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaRoute = MediaRouteImport.update({
@@ -51,6 +64,11 @@ const MediaRoute = MediaRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SsfDawaRoute = SsfDawaRouteImport.update({
+  id: '/ssf-dawa',
+  path: '/ssf-dawa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StaffRoute = StaffRouteImport.update({
@@ -64,9 +82,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admission': typeof AdmissionRoute
+  '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
+  '/language-door': typeof LanguageDoorRoute
   '/media': typeof MediaRoute
   '/news': typeof NewsRoute
+  '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +95,12 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admission': typeof AdmissionRoute
+  '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
+  '/language-door': typeof LanguageDoorRoute
   '/media': typeof MediaRoute
   '/news': typeof NewsRoute
+  '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
 }
 export interface FileRoutesById {
@@ -85,9 +109,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admission': typeof AdmissionRoute
+  '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
+  '/language-door': typeof LanguageDoorRoute
   '/media': typeof MediaRoute
   '/news': typeof NewsRoute
+  '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
 }
 export interface FileRouteTypes {
@@ -97,9 +124,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/academic'
     | '/admission'
+    | '/art-literature'
     | '/contact'
+    | '/language-door'
     | '/media'
     | '/news'
+    | '/ssf-dawa'
     | '/staff'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -107,9 +137,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/academic'
     | '/admission'
+    | '/art-literature'
     | '/contact'
+    | '/language-door'
     | '/media'
     | '/news'
+    | '/ssf-dawa'
     | '/staff'
   id:
     | '__root__'
@@ -117,9 +150,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/academic'
     | '/admission'
+    | '/art-literature'
     | '/contact'
+    | '/language-door'
     | '/media'
     | '/news'
+    | '/ssf-dawa'
     | '/staff'
   fileRoutesById: FileRoutesById
 }
@@ -128,9 +164,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AcademicRoute: typeof AcademicRoute
   AdmissionRoute: typeof AdmissionRoute
+  ArtLiteratureRoute: typeof ArtLiteratureRoute
   ContactRoute: typeof ContactRoute
+  LanguageDoorRoute: typeof LanguageDoorRoute
   MediaRoute: typeof MediaRoute
   NewsRoute: typeof NewsRoute
+  SsfDawaRoute: typeof SsfDawaRoute
   StaffRoute: typeof StaffRoute
 }
 
@@ -164,11 +203,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdmissionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/art-literature': {
+      id: '/art-literature'
+      path: '/art-literature'
+      fullPath: '/art-literature'
+      preLoaderRoute: typeof ArtLiteratureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/language-door': {
+      id: '/language-door'
+      path: '/language-door'
+      fullPath: '/language-door'
+      preLoaderRoute: typeof LanguageDoorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media': {
@@ -183,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ssf-dawa': {
+      id: '/ssf-dawa'
+      path: '/ssf-dawa'
+      fullPath: '/ssf-dawa'
+      preLoaderRoute: typeof SsfDawaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/staff': {
@@ -200,9 +260,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AcademicRoute: AcademicRoute,
   AdmissionRoute: AdmissionRoute,
+  ArtLiteratureRoute: ArtLiteratureRoute,
   ContactRoute: ContactRoute,
+  LanguageDoorRoute: LanguageDoorRoute,
   MediaRoute: MediaRoute,
   NewsRoute: NewsRoute,
+  SsfDawaRoute: SsfDawaRoute,
   StaffRoute: StaffRoute,
 }
 export const routeTree = rootRouteImport

@@ -31,9 +31,10 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
             alt="Darusuffa Academy logo"
             width={160}
             height={50}
-            className={`h-9 w-auto ${overlay ? "brightness-0 invert" : ""}`}
+            className={`h-9 w-auto ${overlay ? "rounded-md bg-white/90 px-2 py-1" : ""}`}
           />
         </Link>
+
 
         <nav className="hidden items-center gap-7 md:flex">
           {nav.map((item) => (

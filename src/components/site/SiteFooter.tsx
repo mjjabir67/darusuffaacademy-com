@@ -43,8 +43,9 @@ export function SiteFooter() {
             width={200}
             height={62}
             loading="lazy"
-            className="h-10 w-auto brightness-0 invert"
+            className="h-11 w-auto rounded-md bg-white/90 px-3 py-1.5"
           />
+
           <p className="font-display text-lg">"Educate. Elevate. Empower."</p>
         </div>
 
