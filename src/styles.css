@@ -65,12 +65,12 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.02 265);
 
-  /* navy #40598D */
-  --primary: oklch(0.47 0.093 268);
+  /* navy #40598D — chroma boosted +30% for a richer brand gradient */
+  --primary: oklch(0.47 0.121 268);
   --primary-foreground: oklch(0.985 0.005 80);
 
-  /* taupe brown #8B7268 */
-  --secondary: oklch(0.56 0.033 45);
+  /* taupe brown #8B7268 — chroma boosted +30% for a richer brand gradient */
+  --secondary: oklch(0.56 0.044 45);
   --secondary-foreground: oklch(0.985 0.005 80);
 
   --muted: oklch(0.955 0.008 70);
