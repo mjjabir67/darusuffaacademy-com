@@ -131,6 +131,10 @@
   background-image: var(--gradient-brand);
 }
 
+@utility footer-gradient {
+  background: radial-gradient(circle at 0% 0%, #5de0e6, #004aad);
+}
+
 @utility eyebrow {
   font-family: var(--font-display);
   text-transform: uppercase;
