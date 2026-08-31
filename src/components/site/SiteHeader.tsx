@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/darusuffa-logo.png.asset.json";
+import logo from "@/assets/darusuffa-logo-transparent.png";
 
 const nav = [
   { to: "/", label: "Home" },
