@@ -38,7 +38,7 @@ export function SiteFooter() {
       <div className="footer-gradient mx-auto max-w-6xl rounded-4xl px-6 py-10 text-ink-foreground sm:px-12">
         <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">
           <img
-            src={logo.url}
+            src={logo}
             alt="Darusuffa Academy"
             width={240}
             height={74}

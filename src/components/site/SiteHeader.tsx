@@ -27,7 +27,7 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-5 py-4">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src={logo.url}
+            src={logo}
             alt="Darusuffa Academy logo"
             width={384}
             height={126}
