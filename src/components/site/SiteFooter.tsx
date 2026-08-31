@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/darusuffa-logo.png.asset.json";
+import logo from "@/assets/darusuffa-logo-white.png";
 
 const columns = [
   {
@@ -38,12 +38,12 @@ export function SiteFooter() {
       <div className="footer-gradient mx-auto max-w-6xl rounded-4xl px-6 py-10 text-ink-foreground sm:px-12">
         <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">
           <img
-            src={logo.url}
+            src={logo}
             alt="Darusuffa Academy"
             width={240}
             height={74}
             loading="lazy"
-            className="h-14 w-auto rounded-lg bg-white/95 px-2 py-1.5"
+            className="h-16 w-auto"
           />
 
           <p className="font-display text-lg">"Educate. Elevate. Empower."</p>
