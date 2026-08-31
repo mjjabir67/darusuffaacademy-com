@@ -4,7 +4,6 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { NEWS } from "@/lib/site-data";
 import heroBooks from "@/assets/hero-books.jpg";
 import quranDark from "@/assets/quran-dark.jpg";
-import campus from "@/assets/campus.jpg";
 import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
