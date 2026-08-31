@@ -31,7 +31,7 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
             alt="Darusuffa Academy logo"
             width={384}
             height={126}
-            className={`h-10 w-auto ${overlay ? "rounded-md bg-white px-3 py-1.5 shadow-sm" : ""}`}
+            className={`h-12 w-auto ${overlay ? "drop-shadow-sm" : ""}`}
           />
         </Link>
 
