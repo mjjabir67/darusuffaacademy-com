@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/darusuffa-logo-transparent.png";
+import logo from "@/assets/darusuffa-logo-white.png";
 
 const columns = [
   {
