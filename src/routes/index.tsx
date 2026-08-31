@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { NEWS } from "@/lib/site-data";
 import heroBooks from "@/assets/hero-books.jpg";
 import quranDark from "@/assets/quran-dark.jpg";
-import campus from "@/assets/campus.jpg";
+import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -86,14 +86,15 @@ function Home() {
 
           <div className="relative mx-auto max-w-6xl px-5 py-24 text-ink-foreground">
             <div className="grid items-stretch gap-0 overflow-hidden rounded-3xl bg-white/10 backdrop-blur-sm md:grid-cols-2">
-              <img
-                src={campus}
-                alt="Darusuffa Academy campus at Vadeesunnah, Kolathur"
-                loading="lazy"
-                width={1200}
-                height={900}
-                className="h-full w-full object-cover"
-              />
+              <div className="relative h-full">
+                <img
+                  src={studentsHallAsset.url}
+                  alt="Students of Darusuffa Academy studying together in the campus hall"
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-white/10 to-transparent" />
+              </div>
               <div className="flex flex-col justify-center gap-5 p-8">
                 <p className="text-lg leading-relaxed">
                   In 2018, under the patronage of Kolathur Irshadiyya, a new chapter began
