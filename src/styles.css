@@ -52,6 +52,7 @@
   --color-gold: var(--gold);
   --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-enquiry: "Lexend Deca", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -141,6 +142,10 @@
   letter-spacing: 0.28em;
   font-size: 0.72rem;
   color: var(--secondary);
+}
+
+@utility font-enquiry {
+  font-family: var(--font-enquiry);
 }
 
 @utility card-soft {
