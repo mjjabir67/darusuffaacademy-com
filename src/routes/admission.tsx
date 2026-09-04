@@ -225,7 +225,7 @@ function Admission() {
       </section>
 
       {/* Admission Enquiry Section */}
-      <section className="bg-surface-ink px-5 py-20">
+      <section className="surface-ink px-5 py-20">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center">
             <p className="eyebrow">Admission Enquiry</p>
