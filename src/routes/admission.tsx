@@ -260,7 +260,7 @@ function Admission() {
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="card-soft space-y-6 p-8 font-enquiry md:p-10"
+              className="card-soft space-y-6 p-8 font-enquiry text-foreground md:p-10"
               noValidate
             >
               <div className="grid gap-6 md:grid-cols-2">
