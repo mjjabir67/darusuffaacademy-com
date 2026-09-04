@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/darusuffa-logo.png.asset.json";
+import logoDark from "@/assets/darusuffa-logo-dark.png";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 
 const nav = [
@@ -28,7 +28,7 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-5 py-4">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src={overlay ? logoWhite : logo.url}
+            src={overlay ? logoWhite : logoDark}
             alt="Darusuffa Academy logo"
             width={384}
             height={126}
