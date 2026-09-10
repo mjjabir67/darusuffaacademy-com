@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademicRouteImport } from './routes/academic'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AdmissionRouteImport } from './routes/admission'
 import { Route as ArtLiteratureRouteImport } from './routes/art-literature'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -35,6 +36,11 @@ const AboutRoute = AboutRouteImport.update({
 const AcademicRoute = AcademicRouteImport.update({
   id: '/academic',
   path: '/academic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdmissionRoute = AdmissionRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
+  '/admin-login': typeof AdminLoginRoute
   '/admission': typeof AdmissionRoute
   '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
+  '/admin-login': typeof AdminLoginRoute
   '/admission': typeof AdmissionRoute
   '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
+  '/admin-login': typeof AdminLoginRoute
   '/admission': typeof AdmissionRoute
   '/art-literature': typeof ArtLiteratureRoute
   '/contact': typeof ContactRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academic'
+    | '/admin-login'
     | '/admission'
     | '/art-literature'
     | '/contact'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academic'
+    | '/admin-login'
     | '/admission'
     | '/art-literature'
     | '/contact'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academic'
+    | '/admin-login'
     | '/admission'
     | '/art-literature'
     | '/contact'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AcademicRoute: typeof AcademicRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdmissionRoute: typeof AdmissionRoute
   ArtLiteratureRoute: typeof ArtLiteratureRoute
   ContactRoute: typeof ContactRoute
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/academic'
       fullPath: '/academic'
       preLoaderRoute: typeof AcademicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admission': {
@@ -279,6 +299,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AcademicRoute: AcademicRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdmissionRoute: AdmissionRoute,
   ArtLiteratureRoute: ArtLiteratureRoute,
   ContactRoute: ContactRoute,
