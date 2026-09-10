@@ -22,6 +22,7 @@ import { Route as MediaRouteImport } from './routes/media'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SsfDawaRouteImport } from './routes/ssf-dawa'
 import { Route as StaffRouteImport } from './routes/staff'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const StaffRoute = StaffRouteImport.update({
   path: '/staff',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
   id: '/api/public/media/$',
   path: '/api/public/media/$',
@@ -97,7 +103,7 @@ const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admin-login': typeof AdminLoginRoute
@@ -109,11 +115,11 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admin-login': typeof AdminLoginRoute
@@ -125,12 +131,13 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academic': typeof AcademicRoute
   '/admin-login': typeof AdminLoginRoute
@@ -142,6 +149,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
@@ -160,11 +168,11 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/about'
     | '/academic'
     | '/admin-login'
@@ -176,6 +184,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin'
     | '/api/public/media/$'
   id:
     | '__root__'
@@ -192,12 +201,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRouteRoute: typeof AdminRouteRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AcademicRoute: typeof AcademicRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -305,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/public/media/$': {
       id: '/api/public/media/$'
       path: '/api/public/media/$'
@@ -315,9 +332,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRouteRoute: AdminRouteRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AcademicRoute: AcademicRoute,
   AdminLoginRoute: AdminLoginRoute,
