@@ -28,14 +28,20 @@ function Enquiries() {
 
   const update = async (id: string, patch: Partial<Enquiry>) => {
     const { error } = await supabase.from("enquiries").update(patch).eq("id", id);
-    if (error) return toast.error("Could not update the enquiry.");
+    if (error) {
+      toast.error("Could not update the enquiry.");
+      return;
+    }
     queryClient.invalidateQueries({ queryKey: ["admin"] });
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this enquiry permanently?")) return;
     const { error } = await supabase.from("enquiries").delete().eq("id", id);
-    if (error) return toast.error("Could not delete the enquiry.");
+    if (error) {
+      toast.error("Could not delete the enquiry.");
+      return;
+    }
     toast.success("Enquiry deleted.");
     queryClient.invalidateQueries({ queryKey: ["admin"] });
   };

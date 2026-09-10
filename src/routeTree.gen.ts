@@ -23,6 +23,7 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as SsfDawaRouteImport } from './routes/ssf-dawa'
 import { Route as StaffRouteImport } from './routes/staff'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -95,6 +96,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
+  id: '/enquiries',
+  path: '/enquiries',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
   id: '/api/public/media/$',
   path: '/api/public/media/$',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/enquiries'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/enquiries'
     | '/admin'
     | '/api/public/media/$'
   id:
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/enquiries'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
@@ -322,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/enquiries': {
+      id: '/admin/enquiries'
+      path: '/enquiries'
+      fullPath: '/admin/enquiries'
+      preLoaderRoute: typeof AdminEnquiriesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/public/media/$': {
       id: '/api/public/media/$'
       path: '/api/public/media/$'
@@ -333,10 +352,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
