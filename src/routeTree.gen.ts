@@ -23,8 +23,13 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as SsfDawaRouteImport } from './routes/ssf-dawa'
 import { Route as StaffRouteImport } from './routes/staff'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAnnouncementsRouteImport } from './routes/admin/announcements'
+import { Route as AdminCoursesRouteImport } from './routes/admin/courses'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
+import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
+import { Route as AdminHomeRouteImport } from './routes/admin/home'
 import { Route as AdminNewsRouteImport } from './routes/admin/news'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -97,14 +102,39 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAnnouncementsRoute = AdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCoursesRoute = AdminCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   id: '/enquiries',
   path: '/enquiries',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminGalleryRoute = AdminGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminHomeRoute = AdminHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNewsRoute = AdminNewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
@@ -127,8 +157,13 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -145,8 +180,13 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -165,8 +205,13 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/ssf-dawa': typeof SsfDawaRoute
   '/staff': typeof StaffRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -186,8 +231,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/announcements'
+    | '/admin/courses'
     | '/admin/enquiries'
+    | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
@@ -204,8 +254,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/announcements'
+    | '/admin/courses'
     | '/admin/enquiries'
+    | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin'
     | '/api/public/media/$'
   id:
@@ -223,8 +278,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/ssf-dawa'
     | '/staff'
+    | '/admin/announcements'
+    | '/admin/courses'
     | '/admin/enquiries'
+    | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
@@ -346,6 +406,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/announcements': {
+      id: '/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AdminAnnouncementsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/courses': {
+      id: '/admin/courses'
+      path: '/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminCoursesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/enquiries': {
       id: '/admin/enquiries'
       path: '/enquiries'
@@ -353,11 +427,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEnquiriesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/gallery': {
+      id: '/admin/gallery'
+      path: '/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/home': {
+      id: '/admin/home'
+      path: '/home'
+      fullPath: '/admin/home'
+      preLoaderRoute: typeof AdminHomeRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/news': {
       id: '/admin/news'
       path: '/news'
       fullPath: '/admin/news'
       preLoaderRoute: typeof AdminNewsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/api/public/media/$': {
@@ -371,14 +466,24 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
+  AdminCoursesRoute: typeof AdminCoursesRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
+  AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminHomeRoute: typeof AdminHomeRoute
   AdminNewsRoute: typeof AdminNewsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAnnouncementsRoute: AdminAnnouncementsRoute,
+  AdminCoursesRoute: AdminCoursesRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
+  AdminGalleryRoute: AdminGalleryRoute,
+  AdminHomeRoute: AdminHomeRoute,
   AdminNewsRoute: AdminNewsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
