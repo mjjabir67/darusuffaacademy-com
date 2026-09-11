@@ -29,6 +29,7 @@ import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
 import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
 import { Route as AdminHomeRouteImport } from './routes/admin/home'
 import { Route as AdminNewsRouteImport } from './routes/admin/news'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -131,6 +132,11 @@ const AdminNewsRoute = AdminNewsRouteImport.update({
   path: '/news',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
   id: '/api/public/media/$',
   path: '/api/public/media/$',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin'
     | '/api/public/media/$'
   id:
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/home'
     | '/admin/news'
+    | '/admin/settings'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
@@ -436,6 +448,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/public/media/$': {
       id: '/api/public/media/$'
       path: '/api/public/media/$'
@@ -453,6 +472,7 @@ interface AdminRouteRouteChildren {
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminHomeRoute: typeof AdminHomeRoute
   AdminNewsRoute: typeof AdminNewsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -463,6 +483,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminGalleryRoute: AdminGalleryRoute,
   AdminHomeRoute: AdminHomeRoute,
   AdminNewsRoute: AdminNewsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
