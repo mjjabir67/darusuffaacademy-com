@@ -27,6 +27,7 @@ import { Route as AdminAnnouncementsRouteImport } from './routes/admin/announcem
 import { Route as AdminCoursesRouteImport } from './routes/admin/courses'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
 import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
+import { Route as AdminHomeRouteImport } from './routes/admin/home'
 import { Route as AdminNewsRouteImport } from './routes/admin/news'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
@@ -120,6 +121,11 @@ const AdminGalleryRoute = AdminGalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminHomeRoute = AdminHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNewsRoute = AdminNewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/enquiries'
     | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
     | '/admin/'
     | '/api/public/media/$'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/enquiries'
     | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
     | '/admin'
     | '/api/public/media/$'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/enquiries'
     | '/admin/gallery'
+    | '/admin/home'
     | '/admin/news'
     | '/admin/'
     | '/api/public/media/$'
@@ -410,6 +422,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGalleryRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/home': {
+      id: '/admin/home'
+      path: '/home'
+      fullPath: '/admin/home'
+      preLoaderRoute: typeof AdminHomeRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/news': {
       id: '/admin/news'
       path: '/news'
@@ -432,6 +451,7 @@ interface AdminRouteRouteChildren {
   AdminCoursesRoute: typeof AdminCoursesRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminHomeRoute: typeof AdminHomeRoute
   AdminNewsRoute: typeof AdminNewsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -441,6 +461,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCoursesRoute: AdminCoursesRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminGalleryRoute: AdminGalleryRoute,
+  AdminHomeRoute: AdminHomeRoute,
   AdminNewsRoute: AdminNewsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
