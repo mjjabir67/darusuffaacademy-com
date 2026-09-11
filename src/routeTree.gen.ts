@@ -25,6 +25,7 @@ import { Route as StaffRouteImport } from './routes/staff'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin/announcements'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
+import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
 import { Route as AdminNewsRouteImport } from './routes/admin/news'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
@@ -108,6 +109,11 @@ const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   path: '/enquiries',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminGalleryRoute = AdminGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNewsRoute = AdminNewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/staff': typeof StaffRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByTo {
   '/staff': typeof StaffRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/staff': typeof StaffRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/gallery': typeof AdminGalleryRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/staff'
     | '/admin/announcements'
     | '/admin/enquiries'
+    | '/admin/gallery'
     | '/admin/news'
     | '/admin/'
     | '/api/public/media/$'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/staff'
     | '/admin/announcements'
     | '/admin/enquiries'
+    | '/admin/gallery'
     | '/admin/news'
     | '/admin'
     | '/api/public/media/$'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/staff'
     | '/admin/announcements'
     | '/admin/enquiries'
+    | '/admin/gallery'
     | '/admin/news'
     | '/admin/'
     | '/api/public/media/$'
@@ -372,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEnquiriesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/gallery': {
+      id: '/admin/gallery'
+      path: '/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/news': {
       id: '/admin/news'
       path: '/news'
@@ -392,6 +411,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteRouteChildren {
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
+  AdminGalleryRoute: typeof AdminGalleryRoute
   AdminNewsRoute: typeof AdminNewsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -399,6 +419,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
+  AdminGalleryRoute: AdminGalleryRoute,
   AdminNewsRoute: AdminNewsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
