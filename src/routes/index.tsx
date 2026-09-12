@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { NEWS } from "@/lib/site-data";
+import {
+  useHomeSettings,
+  useSiteSettings,
+  usePublishedPosts,
+  formatDate,
+} from "@/lib/cms";
 import heroBooks from "@/assets/hero-books.jpg";
 import quranDark from "@/assets/quran-dark.jpg";
 import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
@@ -27,6 +32,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const home = useHomeSettings();
+  const site = useSiteSettings();
+  const { data: posts } = usePublishedPosts();
+  const featured = (posts ?? []).slice(0, 3);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader variant="overlay" />
@@ -46,27 +56,30 @@ function Home() {
             style={{ background: "var(--gradient-veil)" }}
           />
           <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-5 pb-16 pt-32">
-            <h1 className="font-display text-5xl font-bold leading-[0.95] text-ink-foreground sm:text-7xl">
-              DARUSUFFA
-              <br />
-              ACADEMY
+            <h1 className="max-w-3xl font-display text-5xl font-bold leading-[0.95] text-ink-foreground sm:text-7xl">
+              {home.heroTitle}
             </h1>
             <p className="mt-4 font-display text-sm uppercase tracking-[0.35em] text-ink-foreground/80">
-              Muhyisunna Integrated Dars
+              {home.heroSubtitle}
             </p>
+            {home.heroDescription && (
+              <p className="mt-4 max-w-xl text-ink-foreground/80">
+                {home.heroDescription}
+              </p>
+            )}
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link
-                to="/admission"
+              <a
+                href={home.primaryCtaLink}
                 className="rounded-full bg-primary px-6 py-3 font-display text-sm text-primary-foreground transition-transform hover:-translate-y-0.5"
               >
-                Apply for admission
-              </Link>
-              <Link
-                to="/about"
+                {home.primaryCtaLabel}
+              </a>
+              <a
+                href={home.secondaryCtaLink}
                 className="rounded-full border border-white/40 px-6 py-3 font-display text-sm text-ink-foreground transition-colors hover:bg-white/10"
               >
-                Know us
-              </Link>
+                {home.secondaryCtaLabel}
+              </a>
             </div>
           </div>
         </section>
@@ -96,9 +109,9 @@ function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-white/10 to-transparent" />
               </div>
               <div className="flex flex-col justify-center gap-5 p-8">
-                <p className="text-lg leading-relaxed">
-                  In 2018, under the patronage of Kolathur Irshadiyya, a new chapter began
-                  with the founding of Darussuffa Academy at Vadi Sunnah.
+                <h2 className="font-display text-2xl">{home.welcomeTitle}</h2>
+                <p className="whitespace-pre-line text-lg leading-relaxed">
+                  {home.welcomeText}
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   <Link
@@ -123,18 +136,20 @@ function Home() {
             </h2>
 
             <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {NEWS.map((item) => (
+              {featured.map((item) => (
                 <article
-                  key={item.slug}
+                  key={item.id}
                   className="flex flex-col justify-between rounded-2xl bg-white/10 p-7 backdrop-blur-sm"
                 >
                   <div>
-                    {item.tag === "Upcoming" && (
+                    {item.kind === "upcoming" && (
                       <span className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
                         Upcoming
                       </span>
                     )}
-                    <p className="mt-4 text-sm text-ink-foreground/70">{item.date}</p>
+                    <p className="mt-4 text-sm text-ink-foreground/70">
+                      {item.event_time || formatDate(item.event_date ?? item.created_at)}
+                    </p>
                     <h3 className="mt-2 font-display text-2xl">{item.title}</h3>
                     <p className="mt-3 text-sm text-ink-foreground/80">{item.summary}</p>
                   </div>
@@ -150,7 +165,7 @@ function Home() {
             </div>
 
             <p className="mt-24 text-center font-display text-3xl sm:text-4xl">
-              "Educate. Elevate. Empower."
+              "{site.footerText}"
             </p>
           </div>
         </section>

@@ -4,7 +4,9 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CheckCircle, Send } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
-import { CONTACT } from "@/lib/site-data";
+import { useContactSettings } from "@/lib/cms";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,6 +74,7 @@ function Admission() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const CONTACT = useContactSettings();
 
   const updateField = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -130,11 +133,26 @@ function Admission() {
 
     setSubmitting(true);
 
-    // Placeholder for future database / notification integration.
-    // The form data is ready to be sent to a server function or API.
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const courseLabel =
+      COURSES.find((c) => c.value === form.course)?.label ?? form.course;
+
+    const { error } = await supabase.from("enquiries").insert({
+      student_name: form.studentName.trim().slice(0, 120),
+      parent_name: form.parentName.trim().slice(0, 120),
+      phone: form.phone.trim().slice(0, 30),
+      email: form.email.trim().slice(0, 255),
+      course: courseLabel,
+      admission_year: form.year,
+      message: form.message.trim().slice(0, 2000),
+    });
 
     setSubmitting(false);
+
+    if (error) {
+      toast.error("Sorry, your enquiry could not be sent. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
     setForm(INITIAL_DATA);
   };

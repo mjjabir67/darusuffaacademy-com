@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import logo from "@/assets/darusuffa-logo-white.png";
+import { useContactSettings, useSiteSettings } from "@/lib/cms";
 
 const columns = [
   {
@@ -33,6 +34,9 @@ const columns = [
 ] as const;
 
 export function SiteFooter() {
+  const contact = useContactSettings();
+  const site = useSiteSettings();
+
   return (
     <footer className="bg-background px-5 pb-10 pt-16">
       <div className="footer-gradient mx-auto max-w-6xl rounded-4xl px-6 py-10 text-ink-foreground sm:px-12">
@@ -46,7 +50,7 @@ export function SiteFooter() {
             className="h-16 w-auto"
           />
 
-          <p className="font-display text-lg">"Educate. Elevate. Empower."</p>
+          <p className="font-display text-lg">"{site.footerText}"</p>
         </div>
 
         <div className="my-8 h-px bg-white/25" />
@@ -71,24 +75,27 @@ export function SiteFooter() {
         <p className="rule-heading mt-10 font-display text-sm">contact us</p>
 
         <div className="mt-6 grid gap-2 text-sm text-ink-foreground/90 sm:grid-cols-2">
-          <a href="tel:+919961009313" className="hover:opacity-70">
-            +91 99610 09313
+          {contact.phones.map((p) => (
+            <a key={p} href={`tel:${p.replace(/\s/g, "")}`} className="hover:opacity-70">
+              {p}
+            </a>
+          ))}
+          <a href={`mailto:${contact.email}`} className="hover:opacity-70">
+            {contact.email}
           </a>
-          <a href="mailto:darusuffaacademymsa@gmail.com" className="hover:opacity-70">
-            darusuffaacademymsa@gmail.com
-          </a>
-          <a href="tel:+917902520097" className="hover:opacity-70">
-            +91 79025 20097
-          </a>
-          <a href="https://wa.me/917034649996" className="hover:opacity-70">
-            WhatsApp +91 70346 49996
-          </a>
+          {contact.whatsapp && (
+            <a
+              href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`}
+              className="hover:opacity-70"
+            >
+              WhatsApp {contact.whatsapp}
+            </a>
+          )}
         </div>
       </div>
 
       <p className="mx-auto mt-6 max-w-6xl text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Darusuffa Academy, Vadeesunnah, Kolathur. Muhyissunna
-        Integrated Dars.
+        © {new Date().getFullYear()} {site.siteName}, {contact.address}
       </p>
     </footer>
   );
