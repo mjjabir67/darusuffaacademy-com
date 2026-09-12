@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import logo from "@/assets/darusuffa-logo-white.png";
+import { useContactSettings, useSiteSettings } from "@/lib/cms";
 
 const columns = [
   {
