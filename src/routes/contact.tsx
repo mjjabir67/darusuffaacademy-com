@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
-import { CONTACT } from "@/lib/site-data";
+import { useContactSettings } from "@/lib/cms";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Reach Darusuffa Academy at Vadeesunnah, Kolathur PO, 679338 Malappuram, Kerala. Phone +91 99610 09313, email darusuffaacademymsa@gmail.com.",
+          "Reach Darusuffa Academy at Vadeesunnah, Kolathur PO, 679338 Malappuram, Kerala. Phone, WhatsApp, email and campus location.",
       },
       { property: "og:title", content: "Contact Darusuffa Academy" },
       {
@@ -18,12 +18,22 @@ export const Route = createFileRoute("/contact")({
         content:
           "Address, phone, WhatsApp, email and location map for Darusuffa Academy, Vadeesunnah, Kolathur.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Contact,
 });
 
 function Contact() {
+  const contact = useContactSettings();
+
+  const socials = [
+    { Icon: Instagram, href: contact.instagram, label: "Instagram" },
+    { Icon: Facebook, href: contact.facebook, label: "Facebook" },
+    { Icon: Youtube, href: contact.youtube, label: "YouTube" },
+  ].filter((s) => s.href);
+
   return (
     <PageShell
       eyebrow="Muhyissunna Integrated Dars"
@@ -36,7 +46,7 @@ function Contact() {
             <MapPin className="mt-1 shrink-0 text-secondary" size={20} />
             <div>
               <h2 className="font-display text-lg">Address</h2>
-              <p className="text-muted-foreground">{CONTACT.address}</p>
+              <p className="text-muted-foreground">{contact.address}</p>
             </div>
           </div>
 
@@ -44,7 +54,7 @@ function Contact() {
             <Phone className="mt-1 shrink-0 text-secondary" size={20} />
             <div>
               <h2 className="font-display text-lg">Phone</h2>
-              {CONTACT.phones.map((p) => (
+              {contact.phones.map((p) => (
                 <p key={p}>
                   <a
                     href={`tel:${p.replace(/\s/g, "")}`}
@@ -54,14 +64,16 @@ function Contact() {
                   </a>
                 </p>
               ))}
-              <p className="mt-1">
-                <a
-                  href={`https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}`}
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  WhatsApp {CONTACT.whatsapp}
-                </a>
-              </p>
+              {contact.whatsapp && (
+                <p className="mt-1">
+                  <a
+                    href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    WhatsApp {contact.whatsapp}
+                  </a>
+                </p>
+              )}
             </div>
           </div>
 
@@ -70,43 +82,41 @@ function Contact() {
             <div>
               <h2 className="font-display text-lg">Email</h2>
               <a
-                href={`mailto:${CONTACT.email}`}
+                href={`mailto:${contact.email}`}
                 className="text-muted-foreground hover:text-primary"
               >
-                {CONTACT.email}
+                {contact.email}
               </a>
             </div>
           </div>
 
-          <div>
-            <h2 className="font-display text-lg">Get us on</h2>
-            <p className="text-sm text-muted-foreground">
-              Stay connected with us on social media for updates, events and news.
-            </p>
-            <div className="mt-4 flex gap-3">
-              {[
-                { Icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-                { Icon: Facebook, href: "https://facebook.com", label: "Facebook" },
-                { Icon: Youtube, href: "https://youtube.com", label: "YouTube" },
-              ].map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="rounded-full border border-border p-3 text-foreground transition-colors hover:bg-muted"
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
+          {socials.length > 0 && (
+            <div>
+              <h2 className="font-display text-lg">Get us on</h2>
+              <p className="text-sm text-muted-foreground">
+                Stay connected with us on social media for updates, events and news.
+              </p>
+              <div className="mt-4 flex gap-3">
+                {socials.map(({ Icon, href, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    className="rounded-full border border-border p-3 text-foreground transition-colors hover:bg-muted"
+                  >
+                    <Icon size={18} />
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div>
           <h2 className="eyebrow">Vadeessunnah Kolathur</h2>
           <iframe
             title="Map of Darusuffa Academy, Vadeesunnah Kolathur"
-            src={`https://www.google.com/maps?q=${CONTACT.mapQuery}&output=embed`}
+            src={`https://www.google.com/maps?q=${encodeURIComponent(contact.mapQuery)}&output=embed`}
             loading="lazy"
             className="mt-4 h-[420px] w-full rounded-3xl border border-border"
           />
