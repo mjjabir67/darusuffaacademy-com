@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import {
@@ -172,6 +173,15 @@ function Home() {
       </main>
 
       <SiteFooter />
+
+      <Link
+        to="/admin-login"
+        aria-label="Admin Login"
+        className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-2 font-enquiry text-xs text-foreground/70 shadow-md backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-background hover:text-foreground hover:shadow-lg sm:bottom-6 sm:right-6 sm:px-4 sm:text-sm"
+      >
+        <Settings size={14} />
+        <span>Admin Login</span>
+      </Link>
     </div>
   );
 }
