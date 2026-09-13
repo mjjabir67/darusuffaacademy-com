@@ -74,7 +74,15 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink px-5 py-16 font-enquiry">
+    <div className="relative flex min-h-screen items-center justify-center bg-ink px-5 py-16 font-enquiry">
+      <Link
+        to="/"
+        className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-ink/60 px-4 py-2 text-sm text-white/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:bg-white/10 hover:text-white"
+      >
+        <ArrowLeft size={16} />
+        Back to Home
+      </Link>
+
       <div className="w-full max-w-md">
         <img
           src={logoWhite}
