@@ -138,6 +138,19 @@ function AdminLayout() {
         )}
 
         <div className="min-w-0 flex-1">
+          <header className="sticky top-0 z-30 hidden items-center justify-between border-b border-border bg-background px-8 py-4 lg:flex">
+            <h1 className="font-display text-lg">Admin Dashboard</h1>
+            <Link
+              to="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+            >
+              <ExternalLink size={16} />
+              View Website
+            </Link>
+          </header>
+
           <header className="flex items-center gap-3 border-b border-border bg-background px-5 py-4 lg:hidden">
             <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Menu">
               {open ? <X size={20} /> : <Menu size={20} />}
