@@ -23,9 +23,15 @@ export const Route = createFileRoute("/language-door")({
 });
 
 const languages = [
-  { name: "Arabic", note: "Classical grammar, composition and conversation rooted in the Dars tradition." },
+  {
+    name: "Arabic",
+    note: "Classical grammar, composition and conversation rooted in the Dars tradition.",
+  },
   { name: "English", note: "Daily spoken sessions, camps like Engspire and written expression." },
-  { name: "Urdu", note: "Reading and literature circles connecting students to scholarly heritage." },
+  {
+    name: "Urdu",
+    note: "Reading and literature circles connecting students to scholarly heritage.",
+  },
   { name: "Malayalam", note: "Oratory, essay and creative writing for the wider community." },
 ];
 

@@ -12,19 +12,25 @@ export const Route = createFileRoute("/admin-login")({
   head: () => ({
     meta: [
       { title: "Admin Login | Darusuffa Academy" },
-      { name: "description", content: "Secure administrator sign in for the Darusuffa Academy website." },
+      {
+        name: "description",
+        content: "Secure administrator sign in for the Darusuffa Academy website.",
+      },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Admin Login | Darusuffa Academy" },
-      { property: "og:description", content: "Administrator access to the Darusuffa Academy website control panel." },
+      {
+        property: "og:description",
+        content: "Administrator access to the Darusuffa Academy website control panel.",
+      },
     ],
   }),
   component: AdminLogin,
 });
 
-function toEmail(value: string) {
+function toEmailCandidates(value: string): string[] {
   const v = value.trim();
-  if (v.includes("@")) return v;
-  return `admin@${v}`;
+  if (v.includes("@")) return [v];
+  return [`admin@${v}`, v];
 }
 
 function AdminLogin() {
@@ -44,12 +50,25 @@ function AdminLogin() {
     }
 
     setLoading(true);
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: toEmail(adminId),
-      password,
-    });
+    const candidates = toEmailCandidates(adminId);
+    let authUser = null;
+    let lastError: Error | null = null;
 
-    if (signInError || !data.user) {
+    for (const email of candidates) {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (!signInError && data?.user) {
+        authUser = data.user;
+        break;
+      }
+      if (signInError) {
+        lastError = signInError;
+      }
+    }
+
+    if (!authUser) {
       setLoading(false);
       setError("Incorrect admin ID or password.");
       return;
@@ -58,7 +77,7 @@ function AdminLogin() {
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", data.user.id)
+      .eq("user_id", authUser.id)
       .eq("role", "admin")
       .maybeSingle();
 

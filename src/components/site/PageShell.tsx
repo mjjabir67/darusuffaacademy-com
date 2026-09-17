@@ -33,9 +33,7 @@ export function PageShell({
             <h1 className="mt-3 max-w-2xl font-display text-4xl text-ink-foreground sm:text-5xl">
               {title}
             </h1>
-            {intro && (
-              <p className="mt-4 max-w-2xl text-ink-foreground/80">{intro}</p>
-            )}
+            {intro && <p className="mt-4 max-w-2xl text-ink-foreground/80">{intro}</p>}
           </div>
         </section>
         {children}

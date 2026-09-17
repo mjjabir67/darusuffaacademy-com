@@ -1,6 +1,17 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Images } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
-import { usePublishedPosts, usePublishedAnnouncements, formatDate } from "@/lib/cms";
+import {
+  usePublishedPosts,
+  usePublishedAnnouncements,
+  usePublishedGallery,
+  filterEventMedia,
+  formatDate,
+  type Post,
+} from "@/lib/cms";
+import { Button } from "@/components/ui/button";
+import { MediaViewerModal } from "@/components/site/MediaViewerModal";
 
 export const Route = createFileRoute("/news")({
   head: () => ({
@@ -32,6 +43,11 @@ const KIND_LABEL: Record<string, string> = {
 function News() {
   const { data: posts, isLoading } = usePublishedPosts();
   const { data: announcements } = usePublishedAnnouncements();
+  const { data: galleryImages } = usePublishedGallery();
+
+  const [selectedEvent, setSelectedEvent] = useState<Post | null>(null);
+
+  const activeMedia = selectedEvent ? filterEventMedia(selectedEvent, galleryImages ?? []) : [];
 
   return (
     <PageShell
@@ -64,23 +80,43 @@ function News() {
 
         {posts?.map((item) => (
           <article key={item.id} id={item.slug} className="card-soft scroll-mt-24 p-8">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
-                {KIND_LABEL[item.kind] ?? item.kind}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {item.event_time || formatDate(item.event_date ?? item.created_at)}
-              </span>
-              {item.location && (
-                <span className="text-sm text-muted-foreground">· {item.location}</span>
-              )}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
+                  {KIND_LABEL[item.kind] ?? item.kind}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {item.event_time || formatDate(item.event_date ?? item.created_at)}
+                </span>
+                {item.location && (
+                  <span className="text-sm text-muted-foreground">· {item.location}</span>
+                )}
+              </div>
+
+              {/* Event Media Button */}
+              <Button
+                id={`event-media-btn-${item.slug}`}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full gap-2 text-xs font-display transition-all hover:bg-secondary hover:text-secondary-foreground"
+                onClick={() => setSelectedEvent(item)}
+              >
+                <Images className="h-3.5 w-3.5" />
+                <span>Media</span>
+              </Button>
             </div>
+
             <h2 className="mt-4 font-display text-3xl">{item.title}</h2>
             {item.image_url && (
               <img
                 src={item.image_url}
                 alt={item.title}
                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.style.display = "none";
+                }}
                 className="mt-5 max-h-80 w-full rounded-2xl object-cover"
               />
             )}
@@ -90,6 +126,15 @@ function News() {
           </article>
         ))}
       </section>
+
+      {/* Event Media Viewer / No Media Popup */}
+      <MediaViewerModal
+        isOpen={Boolean(selectedEvent)}
+        onClose={() => setSelectedEvent(null)}
+        title={selectedEvent?.title ?? "Event"}
+        subtitle={selectedEvent?.event_date ? formatDate(selectedEvent.event_date) : undefined}
+        media={activeMedia}
+      />
     </PageShell>
   );
 }

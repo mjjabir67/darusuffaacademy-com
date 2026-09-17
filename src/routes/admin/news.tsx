@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Images, Edit2, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeading, Panel, StatusPill, EmptyState } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { slugify, uploadMedia, formatDate, type Post } from "@/lib/cms";
+import { slugify, uploadMedia, deleteStoredMedia, formatDate, type Post } from "@/lib/cms";
+import { EventMediaManager } from "@/components/admin/EventMediaManager";
+import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 
 export const Route = createFileRoute("/admin/news")({
   component: NewsAdmin,
@@ -44,6 +47,8 @@ function NewsAdmin() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Post | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["admin", "posts"],
@@ -58,8 +63,7 @@ function NewsAdmin() {
   });
 
   const posts = data ?? [];
-  const set = (patch: Partial<Draft>) =>
-    setDraft((d) => (d ? { ...d, ...patch } : d));
+  const set = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
 
   const edit = (p: Post) =>
     setDraft({
@@ -105,29 +109,50 @@ function NewsAdmin() {
       published: draft.published,
     };
 
-    const { error } = draft.id
+    const exists = posts.some((p) => p.id === draft.id);
+    const { error } = exists
       ? await supabase.from("posts").update(payload).eq("id", draft.id)
-      : await supabase.from("posts").insert(payload);
+      : await supabase.from("posts").insert(draft.id ? { ...payload, id: draft.id } : payload);
 
     setSaving(false);
     if (error) {
-      toast.error("Could not save this update.");
+      toast.error("Could not save this update: " + error.message);
       return;
     }
     toast.success("Saved. The website is updated.");
     setDraft(null);
-    queryClient.invalidateQueries();
+    queryClient.invalidateQueries({ queryKey: ["admin", "posts"] });
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
+    queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this item permanently?")) return;
-    const { error } = await supabase.from("posts").delete().eq("id", id);
-    if (error) {
-      toast.error("Could not delete the item.");
-      return;
+  const executeDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      // 1. Delete post from database
+      const { error } = await supabase.from("posts").delete().eq("id", deleteTarget.id);
+      if (error) {
+        toast.error("Could not delete the item: " + error.message);
+        return;
+      }
+
+      // 2. Clean up cover image if present
+      if (deleteTarget.image_url) {
+        void deleteStoredMedia(deleteTarget.image_url);
+      }
+
+      toast.success("Item deleted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error("[NewsAdmin] Delete error:", err);
+      toast.error("An unexpected error occurred while deleting.");
+    } finally {
+      setIsDeleting(false);
     }
-    toast.success("Deleted.");
-    queryClient.invalidateQueries();
   };
 
   const togglePublish = async (p: Post) => {
@@ -136,10 +161,12 @@ function NewsAdmin() {
       .update({ published: !p.published })
       .eq("id", p.id);
     if (error) {
-      toast.error("Could not change visibility.");
+      toast.error("Could not change visibility: " + error.message);
       return;
     }
-    queryClient.invalidateQueries();
+    toast.success(p.published ? "Post unpublished." : "Post published.");
+    queryClient.invalidateQueries({ queryKey: ["admin", "posts"] });
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
   return (
@@ -148,14 +175,21 @@ function NewsAdmin() {
         title="News & Events"
         description="Add, edit or remove the news and events shown on the website."
         action={
-          <Button className="rounded-full" onClick={() => setDraft({ ...EMPTY })}>
+          <Button
+            className="rounded-full gap-2"
+            onClick={() => setDraft({ ...EMPTY, id: crypto.randomUUID() })}
+          >
+            <Plus className="h-4 w-4" />
             Add new
           </Button>
         }
       />
 
       {draft && (
-        <Panel title={draft.id ? "Edit item" : "New item"} className="mb-6">
+        <Panel
+          title={draft.id && posts.some((p) => p.id === draft.id) ? "Edit item" : "New item"}
+          className="mb-6"
+        >
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="kind">Type</Label>
@@ -251,15 +285,20 @@ function NewsAdmin() {
             </div>
           </div>
 
+          {/* Event Media Management Section */}
+          <div className="mt-8">
+            <EventMediaManager
+              eventId={draft.id || ""}
+              eventTitle={draft.title}
+              eventSlug={slugify(draft.title) || draft.id || ""}
+            />
+          </div>
+
           <div className="mt-6 flex gap-3">
             <Button className="rounded-full" onClick={save} disabled={saving}>
               {saving ? "Saving..." : "Save"}
             </Button>
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setDraft(null)}
-            >
+            <Button variant="outline" className="rounded-full" onClick={() => setDraft(null)}>
               Cancel
             </Button>
           </div>
@@ -272,7 +311,7 @@ function NewsAdmin() {
         <div className="space-y-3">
           {posts.map((p) => (
             <Panel key={p.id} className="flex flex-wrap items-center justify-between gap-4">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-display text-lg">{p.title}</h3>
                   <StatusPill published={p.published} />
@@ -281,8 +320,23 @@ function NewsAdmin() {
                   {p.kind} · {p.event_date ? formatDate(p.event_date) : formatDate(p.created_at)}
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" className="rounded-full" onClick={() => edit(p)}>
+              <div className="flex flex-wrap gap-2 shrink-0">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full gap-1.5"
+                  onClick={() => edit(p)}
+                >
+                  <Images className="h-3.5 w-3.5" />
+                  <span>Media</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full gap-1.5"
+                  onClick={() => edit(p)}
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
                   Edit
                 </Button>
                 <Button
@@ -296,9 +350,10 @@ function NewsAdmin() {
                 <Button
                   size="sm"
                   variant="destructive"
-                  className="rounded-full"
-                  onClick={() => remove(p.id)}
+                  className="rounded-full gap-1.5"
+                  onClick={() => setDeleteTarget(p)}
                 >
+                  <Trash2 className="h-3.5 w-3.5" />
                   Delete
                 </Button>
               </div>
@@ -306,6 +361,19 @@ function NewsAdmin() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete Post"
+        itemName={deleteTarget?.title}
+        description={`Are you sure you want to permanently delete "${deleteTarget?.title}"? Any attached media will also be cleaned up.`}
+        onConfirm={executeDelete}
+        isDeleting={isDeleting}
+      />
     </>
   );
 }

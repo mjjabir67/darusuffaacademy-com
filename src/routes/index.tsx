@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Settings } from "lucide-react";
+import { Settings, Images } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import {
   useHomeSettings,
   useSiteSettings,
   usePublishedPosts,
+  usePublishedGallery,
+  filterEventMedia,
   formatDate,
+  type Post,
 } from "@/lib/cms";
+import { MediaViewerModal } from "@/components/site/MediaViewerModal";
 import heroBooks from "@/assets/hero-books.jpg";
 import quranDark from "@/assets/quran-dark.jpg";
 import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
@@ -36,7 +41,11 @@ function Home() {
   const home = useHomeSettings();
   const site = useSiteSettings();
   const { data: posts } = usePublishedPosts();
+  const { data: galleryImages } = usePublishedGallery();
+  const [selectedEvent, setSelectedEvent] = useState<Post | null>(null);
+
   const featured = (posts ?? []).slice(0, 3);
+  const activeMedia = selectedEvent ? filterEventMedia(selectedEvent, galleryImages ?? []) : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,11 +61,8 @@ function Home() {
             height={1088}
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div
-            className="absolute inset-0"
-            style={{ background: "var(--gradient-veil)" }}
-          />
-          <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-5 pb-16 pt-32">
+          <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
+          <div className="relative mx-auto flex w-full min-h-[78vh] max-w-6xl flex-col items-start justify-center px-5 pb-16 pt-32 text-left">
             <h1 className="max-w-3xl font-display text-5xl font-bold leading-[0.95] text-ink-foreground sm:text-7xl">
               {home.heroTitle}
             </h1>
@@ -64,11 +70,9 @@ function Home() {
               {home.heroSubtitle}
             </p>
             {home.heroDescription && (
-              <p className="mt-4 max-w-xl text-ink-foreground/80">
-                {home.heroDescription}
-              </p>
+              <p className="mt-4 max-w-xl text-ink-foreground/80">{home.heroDescription}</p>
             )}
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-9 flex w-full flex-wrap gap-3">
               <a
                 href={home.primaryCtaLink}
                 className="rounded-full bg-primary px-6 py-3 font-display text-sm text-primary-foreground transition-transform hover:-translate-y-0.5"
@@ -111,9 +115,7 @@ function Home() {
               </div>
               <div className="flex flex-col justify-center gap-5 p-8">
                 <h2 className="font-display text-2xl">{home.welcomeTitle}</h2>
-                <p className="whitespace-pre-line text-lg leading-relaxed">
-                  {home.welcomeText}
-                </p>
+                <p className="whitespace-pre-line text-lg leading-relaxed">{home.welcomeText}</p>
                 <div className="flex flex-wrap items-center gap-4">
                   <Link
                     to="/about"
@@ -154,13 +156,24 @@ function Home() {
                     <h3 className="mt-2 font-display text-2xl">{item.title}</h3>
                     <p className="mt-3 text-sm text-ink-foreground/80">{item.summary}</p>
                   </div>
-                  <Link
-                    to="/news"
-                    hash={item.slug}
-                    className="mt-6 self-start rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
-                  >
-                    Continue reading
-                  </Link>
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <Link
+                      to="/news"
+                      hash={item.slug}
+                      className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition hover:opacity-90"
+                    >
+                      Continue reading
+                    </Link>
+                    <button
+                      id={`home-event-media-btn-${item.slug}`}
+                      type="button"
+                      onClick={() => setSelectedEvent(item)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-ink-foreground transition hover:bg-white/20"
+                    >
+                      <Images size={15} />
+                      <span>Media</span>
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -173,6 +186,14 @@ function Home() {
       </main>
 
       <SiteFooter />
+
+      <MediaViewerModal
+        isOpen={Boolean(selectedEvent)}
+        onClose={() => setSelectedEvent(null)}
+        title={selectedEvent?.title ?? "Event"}
+        subtitle={selectedEvent?.event_date ? formatDate(selectedEvent.event_date) : undefined}
+        media={activeMedia}
+      />
 
       <Link
         to="/admin-login"

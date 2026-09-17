@@ -1,5 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/site/PageShell";
+import { usePublishedGallery, groupGalleryAlbums, type GalleryAlbum } from "@/lib/cms";
+import { Button } from "@/components/ui/button";
+import { MediaViewerModal } from "@/components/site/MediaViewerModal";
 import students from "@/assets/students.jpg";
 import campus from "@/assets/campus.jpg";
 
@@ -10,7 +14,7 @@ export const Route = createFileRoute("/media")({
       {
         name: "description",
         content:
-          "Photo gallery from Darusuffa Academy programmes — Engspire English camp and Amazio 24 arts fest at Vadeesunnah, Kolathur.",
+          "Photo gallery from Darusuffa Academy programmes — camps, fests and academic events at Vadeesunnah, Kolathur.",
       },
       { property: "og:title", content: "Media | Darusuffa Academy" },
       {
@@ -22,22 +26,54 @@ export const Route = createFileRoute("/media")({
   component: Media,
 });
 
-const albums = [
+const DEFAULT_ALBUMS: GalleryAlbum[] = [
   {
-    slug: "engspire",
     title: "Engspire",
+    slug: "engspire",
     caption: "Ten-day English proficiency camp",
-    image: students,
+    coverImage: students,
+    count: 1,
+    images: [
+      {
+        id: "default-engspire-1",
+        url: students,
+        caption: "Engspire — Ten-day English proficiency camp",
+        type: "image",
+        sort_order: 0,
+        published: true,
+        created_at: new Date().toISOString(),
+      },
+    ],
   },
   {
-    slug: "amazio-2026",
     title: "Amazio 24",
+    slug: "amazio-2026",
     caption: "Literary and arts fest of the academy",
-    image: campus,
+    coverImage: campus,
+    count: 1,
+    images: [
+      {
+        id: "default-amazio-1",
+        url: campus,
+        caption: "Amazio 24 — Literary and arts fest of the academy",
+        type: "image",
+        sort_order: 0,
+        published: true,
+        created_at: new Date().toISOString(),
+      },
+    ],
   },
 ];
 
 function Media() {
+  const { data: galleryImages, isLoading } = usePublishedGallery();
+  const [activeAlbum, setActiveAlbum] = useState<GalleryAlbum | null>(null);
+
+  const dynamicAlbums =
+    galleryImages && galleryImages.length > 0 ? groupGalleryAlbums(galleryImages) : [];
+
+  const displayAlbums = dynamicAlbums.length > 0 ? dynamicAlbums : DEFAULT_ALBUMS;
+
   return (
     <PageShell
       eyebrow="Gallery"
@@ -45,28 +81,86 @@ function Media() {
       intro="Moments from the programmes, camps and fests of Darusuffa Academy."
     >
       <section className="mx-auto grid max-w-6xl gap-8 px-5 py-20 md:grid-cols-2">
-        {albums.map((album) => (
-          <Link
+        {isLoading && (
+          <div className="col-span-full py-12 text-center text-muted-foreground">
+            Loading gallery albums...
+          </div>
+        )}
+
+        {displayAlbums.map((album) => (
+          <div
             key={album.slug}
-            to="/news"
-            hash={album.slug}
-            className="group overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)]"
+            id={`gallery-album-card-${album.slug}`}
+            className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-soft)] transition-all hover:shadow-lg"
           >
-            <img
-              src={album.image}
-              alt={`${album.title} — ${album.caption}`}
-              loading="lazy"
-              width={1200}
-              height={900}
-              className="h-72 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="bg-card p-6">
-              <h2 className="font-display text-xl">{album.title} →</h2>
-              <p className="text-sm text-muted-foreground">{album.caption}</p>
+            <div
+              className="relative h-72 w-full cursor-pointer overflow-hidden bg-muted"
+              onClick={() => setActiveAlbum(album)}
+            >
+              <img
+                src={album.coverImage}
+                alt={album.title}
+                loading="lazy"
+                width={1200}
+                height={900}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = campus;
+                }}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur">
+                {album.count} {album.count === 1 ? "Photo" : "Photos"}
+              </span>
             </div>
-          </Link>
+
+            <div className="flex flex-1 flex-col justify-between p-6">
+              <div>
+                <h2 className="font-display text-xl text-card-foreground">{album.title}</h2>
+                <p className="mt-1 text-sm font-medium text-primary">
+                  {album.count} {album.count === 1 ? "Photo" : "Photos"}
+                </p>
+                {album.caption && album.caption !== album.title && (
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{album.caption}</p>
+                )}
+              </div>
+
+              <div className="mt-6">
+                <Button
+                  id={`view-gallery-btn-${album.slug}`}
+                  type="button"
+                  variant="outline"
+                  className="w-full rounded-full border-primary/20 text-primary transition-all hover:bg-primary hover:text-primary-foreground font-display text-sm"
+                  onClick={() => setActiveAlbum(album)}
+                >
+                  View Gallery
+                </Button>
+              </div>
+            </div>
+          </div>
         ))}
       </section>
+
+      {/* Album Popup Gallery */}
+      <MediaViewerModal
+        isOpen={Boolean(activeAlbum)}
+        onClose={() => setActiveAlbum(null)}
+        title={activeAlbum?.title ?? "Gallery Album"}
+        subtitle={
+          activeAlbum
+            ? `${activeAlbum.count} ${activeAlbum.count === 1 ? "Photo" : "Photos"}`
+            : undefined
+        }
+        media={
+          activeAlbum?.images.map((img) => ({
+            id: img.id,
+            url: img.url,
+            caption: img.caption,
+            type: img.type,
+          })) ?? []
+        }
+      />
     </PageShell>
   );
 }

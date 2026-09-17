@@ -1,0 +1,6 @@
+{
+  "name": "Darusuffa Academy",
+  "description": "Integrated Islamic and modern education academy at Vadeesunnah, Kolathur, Kerala",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

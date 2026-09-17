@@ -31,17 +31,15 @@ function SsfDawa() {
     >
       <section className="mx-auto max-w-4xl px-5 py-20">
         <p className="text-lg leading-relaxed">
-          Our institution proudly hosts an active <strong>SSF Da'wa Unit</strong>,
-          functioning under the spiritual and intellectual guidance of the{" "}
-          <strong>Sunni Students' Federation (SSF)</strong>. The unit is dedicated to
-          promoting the peaceful message of Islam through knowledge, character and
-          service.
+          Our institution proudly hosts an active <strong>SSF Da'wa Unit</strong>, functioning under
+          the spiritual and intellectual guidance of the{" "}
+          <strong>Sunni Students' Federation (SSF)</strong>. The unit is dedicated to promoting the
+          peaceful message of Islam through knowledge, character and service.
         </p>
         <p className="mt-5 leading-relaxed text-muted-foreground">
-          Through study circles, campus programmes, social service drives and community
-          outreach, the unit trains students to carry the teachings of the Qur'an and
-          Sunnah with wisdom and good conduct — engaging society with compassion rather
-          than confrontation.
+          Through study circles, campus programmes, social service drives and community outreach,
+          the unit trains students to carry the teachings of the Qur'an and Sunnah with wisdom and
+          good conduct — engaging society with compassion rather than confrontation.
         </p>
       </section>
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Trash2, Edit2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeading, Panel, StatusPill, EmptyState } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { uploadMedia, type Course } from "@/lib/cms";
+import { uploadMedia, deleteStoredMedia, type Course } from "@/lib/cms";
+import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 
 export const Route = createFileRoute("/admin/courses")({
   component: CoursesAdmin,
@@ -35,14 +37,13 @@ const EMPTY: Draft = {
 function CoursesAdmin() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["admin", "courses"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("*")
-        .order("sort_order");
+      const { data, error } = await supabase.from("courses").select("*").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Course[];
     },
@@ -68,22 +69,38 @@ function CoursesAdmin() {
       ? await supabase.from("courses").update(payload).eq("id", draft.id)
       : await supabase.from("courses").insert(payload);
     if (error) {
-      toast.error("Could not save the course.");
+      toast.error("Could not save the course: " + error.message);
       return;
     }
-    toast.success("Saved.");
+    toast.success("Course saved successfully.");
     setDraft(null);
-    queryClient.invalidateQueries();
+    queryClient.invalidateQueries({ queryKey: ["admin", "courses"] });
+    queryClient.invalidateQueries({ queryKey: ["courses"] });
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this course?")) return;
-    const { error } = await supabase.from("courses").delete().eq("id", id);
-    if (error) {
-      toast.error("Could not delete the course.");
-      return;
+  const executeDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.from("courses").delete().eq("id", deleteTarget.id);
+      if (error) {
+        toast.error("Could not delete the course: " + error.message);
+        return;
+      }
+      if (deleteTarget.image_url) {
+        void deleteStoredMedia(deleteTarget.image_url);
+      }
+      toast.success("Course deleted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error("[CoursesAdmin] Delete error:", err);
+      toast.error("An unexpected error occurred while deleting.");
+    } finally {
+      setIsDeleting(false);
     }
-    queryClient.invalidateQueries();
   };
 
   const handleUpload = async (file: File) => {
@@ -102,7 +119,8 @@ function CoursesAdmin() {
         title="Courses & Programs"
         description="The courses listed on the academics and admission pages."
         action={
-          <Button className="rounded-full" onClick={() => setDraft({ ...EMPTY })}>
+          <Button className="rounded-full gap-2" onClick={() => setDraft({ ...EMPTY })}>
+            <Plus className="h-4 w-4" />
             Add course
           </Button>
         }
@@ -182,20 +200,18 @@ function CoursesAdmin() {
         <div className="space-y-3">
           {courses.map((c) => (
             <Panel key={c.id} className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-display text-lg">{c.title}</h3>
                   <StatusPill published={c.published} />
                 </div>
-                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                  {c.description}
-                </p>
+                <p className="mt-1 max-w-xl text-sm text-muted-foreground">{c.description}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 shrink-0">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="rounded-full"
+                  className="rounded-full gap-1.5"
                   onClick={() =>
                     setDraft({
                       id: c.id,
@@ -207,14 +223,16 @@ function CoursesAdmin() {
                     })
                   }
                 >
+                  <Edit2 className="h-3.5 w-3.5" />
                   Edit
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
-                  className="rounded-full"
-                  onClick={() => remove(c.id)}
+                  className="rounded-full gap-1.5"
+                  onClick={() => setDeleteTarget(c)}
                 >
+                  <Trash2 className="h-3.5 w-3.5" />
                   Delete
                 </Button>
               </div>
@@ -222,6 +240,19 @@ function CoursesAdmin() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete Course"
+        itemName={deleteTarget?.title}
+        description={`Are you sure you want to permanently delete "${deleteTarget?.title}"?`}
+        onConfirm={executeDelete}
+        isDeleting={isDeleting}
+      />
     </>
   );
 }

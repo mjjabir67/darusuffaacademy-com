@@ -11,6 +11,7 @@ const nav = [
   { to: "/academic", label: "Academic" },
   { to: "/contact", label: "Contact Us" },
   { to: "/staff", label: "Staffs" },
+  { to: "/media", label: "Gallery" },
 ] as const;
 
 export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay" }) {
@@ -35,7 +36,6 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
             className={`h-12 w-auto ${overlay ? "drop-shadow-sm" : ""}`}
           />
         </Link>
-
 
         <nav className="hidden items-center gap-7 md:flex">
           {nav.map((item) => (

@@ -15,13 +15,15 @@ import {
   Megaphone,
   Images,
   GraduationCap,
+  Users,
   Settings,
   LogOut,
   Menu,
   X,
   ExternalLink,
+  FileText,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,7 +42,11 @@ export const Route = createFileRoute("/admin")({
       .maybeSingle();
 
     if (!role) throw redirect({ to: "/admin-login" });
-    return { adminEmail: data.user.email ?? "" };
+    const username =
+      data.user.user_metadata?.username ||
+      (data.user.email?.startsWith("admin@") ? data.user.email.slice(6) : data.user.email) ||
+      "";
+    return { adminEmail: username };
   },
   component: AdminLayout,
 });
@@ -48,11 +54,13 @@ export const Route = createFileRoute("/admin")({
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/home", label: "Home Page", icon: Home },
+  { to: "/admin/admission", label: "Admission", icon: FileText },
   { to: "/admin/news", label: "News & Events", icon: Newspaper },
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
   { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/courses", label: "Courses", icon: GraduationCap },
+  { to: "/admin/staff", label: "Staff & Committee", icon: Users },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -62,6 +70,56 @@ function AdminLayout() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+
+  // Unread general enquiries count (strictly from enquiries table)
+  const { data: unreadEnquiriesCount = 0 } = useQuery({
+    queryKey: ["admin", "unread-enquiries-count"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("enquiries")
+        .select("id, is_read, message")
+        .eq("is_read", false);
+      const valid = (data ?? []).filter((e) => !e.message?.includes("[ADMISSION APPLICATION]"));
+      return valid.length;
+    },
+    refetchInterval: 30000,
+  });
+
+  // New admission applications count (strictly from admission_applications data structure)
+  const { data: newApplicationsCount = 0 } = useQuery({
+    queryKey: ["admin", "new-applications-count"],
+    queryFn: async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        const res = await fetch("/api/admissions/applications", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json.applications)) {
+            return json.applications.filter((a: { status?: string }) => a.status === "New").length;
+          }
+        }
+      } catch {
+        // fallback
+      }
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "admission_applications")
+          .maybeSingle();
+        if (data && Array.isArray(data.value)) {
+          return (data.value as { status?: string }[]).filter((a) => a.status === "New").length;
+        }
+      } catch (err) {
+        console.warn("[AdminNav] Count fetch error:", err);
+      }
+      return 0;
+    },
+    refetchInterval: 30000,
+  });
 
   useEffect(() => {
     setOpen(false);
@@ -82,6 +140,14 @@ function AdminLayout() {
         {NAV.map(({ to, label, icon: Icon, ...rest }) => {
           const exact = "exact" in rest && rest.exact;
           const active = exact ? pathname === to : pathname.startsWith(to);
+
+          const badgeCount =
+            to === "/admin/admission"
+              ? newApplicationsCount
+              : to === "/admin/enquiries"
+                ? unreadEnquiriesCount
+                : 0;
+
           return (
             <Link
               key={to}
@@ -93,7 +159,18 @@ function AdminLayout() {
               }`}
             >
               <Icon size={18} />
-              {label}
+              <span>{label}</span>
+              {badgeCount > 0 && (
+                <span
+                  className={`ml-auto rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    to === "/admin/admission"
+                      ? "bg-blue-500/30 text-blue-200 border border-blue-400/30"
+                      : "bg-emerald-500/30 text-emerald-200 border border-emerald-400/30"
+                  }`}
+                >
+                  {badgeCount}
+                </span>
+              )}
             </Link>
           );
         })}

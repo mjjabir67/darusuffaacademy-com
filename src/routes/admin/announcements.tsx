@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Trash2, Edit2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeading, Panel, StatusPill, EmptyState } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { formatDate, type Announcement } from "@/lib/cms";
+import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 
 export const Route = createFileRoute("/admin/announcements")({
   component: AnnouncementsAdmin,
@@ -21,8 +23,10 @@ const EMPTY: Draft = { title: "", body: "", published: true };
 function AnnouncementsAdmin() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["admin", "announcements"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -52,22 +56,36 @@ function AnnouncementsAdmin() {
       ? await supabase.from("announcements").update(payload).eq("id", draft.id)
       : await supabase.from("announcements").insert(payload);
     if (error) {
-      toast.error("Could not save the announcement.");
+      toast.error("Could not save the announcement: " + error.message);
       return;
     }
-    toast.success("Saved.");
+    toast.success("Announcement saved successfully.");
     setDraft(null);
-    queryClient.invalidateQueries();
+    queryClient.invalidateQueries({ queryKey: ["admin", "announcements"] });
+    queryClient.invalidateQueries({ queryKey: ["announcements"] });
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this announcement?")) return;
-    const { error } = await supabase.from("announcements").delete().eq("id", id);
-    if (error) {
-      toast.error("Could not delete the announcement.");
-      return;
+  const executeDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.from("announcements").delete().eq("id", deleteTarget.id);
+
+      if (error) {
+        toast.error("Could not delete the announcement: " + error.message);
+        return;
+      }
+      toast.success("Announcement deleted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error("[AnnouncementsAdmin] Delete error:", err);
+      toast.error("An unexpected error occurred while deleting.");
+    } finally {
+      setIsDeleting(false);
     }
-    queryClient.invalidateQueries();
   };
 
   return (
@@ -76,7 +94,8 @@ function AnnouncementsAdmin() {
         title="Announcements"
         description="Short notices shown across the website."
         action={
-          <Button className="rounded-full" onClick={() => setDraft({ ...EMPTY })}>
+          <Button className="rounded-full gap-2" onClick={() => setDraft({ ...EMPTY })}>
+            <Plus className="h-4 w-4" />
             Add announcement
           </Button>
         }
@@ -114,11 +133,7 @@ function AnnouncementsAdmin() {
               <Button className="rounded-full" onClick={save}>
                 Save
               </Button>
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setDraft(null)}
-              >
+              <Button variant="outline" className="rounded-full" onClick={() => setDraft(null)}>
                 Cancel
               </Button>
             </div>
@@ -132,21 +147,19 @@ function AnnouncementsAdmin() {
         <div className="space-y-3">
           {items.map((a) => (
             <Panel key={a.id} className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-display text-lg">{a.title}</h3>
                   <StatusPill published={a.published} />
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {formatDate(a.created_at)}
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{formatDate(a.created_at)}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 shrink-0">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="rounded-full"
+                  className="rounded-full gap-1.5"
                   onClick={() =>
                     setDraft({
                       id: a.id,
@@ -156,14 +169,16 @@ function AnnouncementsAdmin() {
                     })
                   }
                 >
+                  <Edit2 className="h-3.5 w-3.5" />
                   Edit
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
-                  className="rounded-full"
-                  onClick={() => remove(a.id)}
+                  className="rounded-full gap-1.5"
+                  onClick={() => setDeleteTarget(a)}
                 >
+                  <Trash2 className="h-3.5 w-3.5" />
                   Delete
                 </Button>
               </div>
@@ -171,6 +186,19 @@ function AnnouncementsAdmin() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete Announcement"
+        itemName={deleteTarget?.title}
+        description={`Are you sure you want to permanently delete "${deleteTarget?.title}"? This announcement will be removed from the website.`}
+        onConfirm={executeDelete}
+        isDeleting={isDeleting}
+      />
     </>
   );
 }
