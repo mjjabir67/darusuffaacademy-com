@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
-import { useStaffMembers, useCommitteeMembers } from "@/lib/cms";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  useStaffMembers,
+  useCommitteeMembers,
+  type StaffMember,
+  type CommitteeMember,
+} from "@/lib/cms";
 
 export const Route = createFileRoute("/staff")({
   head: () => ({
@@ -23,12 +31,24 @@ export const Route = createFileRoute("/staff")({
   component: Staff,
 });
 
-function StaffMemberAvatar({ name, photoUrl }: { name: string; photoUrl?: string | null }) {
+function StaffMemberAvatar({
+  name,
+  photoUrl,
+  size = "default",
+}: {
+  name: string;
+  photoUrl?: string | null;
+  size?: "default" | "large";
+}) {
   const [error, setError] = useState(false);
+  const sizeClasses =
+    size === "large" ? "h-28 w-28 sm:h-32 sm:w-32 text-4xl" : "h-20 w-20 sm:h-24 sm:w-24 text-2xl";
 
   if (photoUrl && !error) {
     return (
-      <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full border-2 border-primary/20 bg-muted shadow-sm">
+      <div
+        className={`relative ${sizeClasses} shrink-0 overflow-hidden rounded-full border-2 border-primary/20 bg-muted shadow-sm`}
+      >
         <img
           src={photoUrl}
           alt={name}
@@ -43,19 +63,33 @@ function StaffMemberAvatar({ name, photoUrl }: { name: string; photoUrl?: string
   return (
     <div
       aria-hidden
-      className="grid h-20 w-20 sm:h-24 sm:w-24 shrink-0 place-items-center rounded-full brand-gradient font-display text-2xl text-primary-foreground font-semibold shadow-sm"
+      className={`grid ${sizeClasses} shrink-0 place-items-center rounded-full brand-gradient font-display text-primary-foreground font-semibold shadow-sm`}
     >
       {name ? name.charAt(0).toUpperCase() : "S"}
     </div>
   );
 }
 
-function CommitteeMemberAvatar({ name, photoUrl }: { name: string; photoUrl?: string | null }) {
+function CommitteeMemberAvatar({
+  name,
+  photoUrl,
+  size = "default",
+}: {
+  name: string;
+  photoUrl?: string | null;
+  size?: "default" | "large";
+}) {
   const [error, setError] = useState(false);
+  const sizeClasses =
+    size === "large"
+      ? "h-28 w-28 sm:h-32 sm:w-32 rounded-3xl text-4xl"
+      : "h-18 w-18 sm:h-20 sm:w-20 rounded-2xl text-xl";
 
   if (photoUrl && !error) {
     return (
-      <div className="relative h-18 w-18 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted shadow-xs">
+      <div
+        className={`relative ${sizeClasses} shrink-0 overflow-hidden border border-border bg-muted shadow-xs`}
+      >
         <img
           src={photoUrl}
           alt={name}
@@ -70,7 +104,7 @@ function CommitteeMemberAvatar({ name, photoUrl }: { name: string; photoUrl?: st
   return (
     <div
       aria-hidden
-      className="grid h-18 w-18 sm:h-20 sm:w-20 shrink-0 place-items-center rounded-2xl bg-secondary font-display text-xl text-secondary-foreground font-semibold border border-border"
+      className={`grid ${sizeClasses} shrink-0 place-items-center bg-secondary font-display text-secondary-foreground font-semibold border border-border`}
     >
       {name ? name.charAt(0).toUpperCase() : "C"}
     </div>
@@ -80,6 +114,10 @@ function CommitteeMemberAvatar({ name, photoUrl }: { name: string; photoUrl?: st
 function Staff() {
   const staffMembers = useStaffMembers();
   const committeeMembers = useCommitteeMembers();
+  const [selectedPerson, setSelectedPerson] = useState<{
+    member: StaffMember | CommitteeMember;
+    type: "staff" | "committee";
+  } | null>(null);
 
   return (
     <PageShell
@@ -95,11 +133,24 @@ function Staff() {
               key={person.id || person.name}
               className="card-soft flex items-center gap-5 p-6 transition-transform duration-200 hover:-translate-y-0.5"
             >
-              <StaffMemberAvatar name={person.name} photoUrl={person.photo_url} />
+              <button
+                type="button"
+                onClick={() => setSelectedPerson({ member: person, type: "staff" })}
+                className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full shrink-0"
+                aria-label={`View details for ${person.name}`}
+              >
+                <StaffMemberAvatar name={person.name} photoUrl={person.photo_url} />
+              </button>
               <div className="min-w-0 flex-1">
                 <p className="eyebrow truncate">{person.role || "Faculty"}</p>
                 <h2 className="mt-1 font-display text-xl leading-tight text-foreground">
-                  {person.name}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPerson({ member: person, type: "staff" })}
+                    className="text-left font-display text-xl leading-tight text-foreground hover:text-primary transition-colors cursor-pointer focus:outline-none focus-visible:underline"
+                  >
+                    {person.name}
+                  </button>
                 </h2>
               </div>
             </article>
@@ -128,10 +179,23 @@ function Staff() {
                   key={member.id || member.name}
                   className="rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md flex items-center gap-4"
                 >
-                  <CommitteeMemberAvatar name={member.name} photoUrl={member.photo_url} />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPerson({ member, type: "committee" })}
+                    className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl shrink-0"
+                    aria-label={`View details for ${member.name}`}
+                  >
+                    <CommitteeMemberAvatar name={member.name} photoUrl={member.photo_url} />
+                  </button>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-display text-lg font-medium leading-snug text-foreground">
-                      {member.name}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPerson({ member, type: "committee" })}
+                        className="text-left font-display text-lg font-medium leading-snug text-foreground hover:text-primary transition-colors cursor-pointer focus:outline-none focus-visible:underline"
+                      >
+                        {member.name}
+                      </button>
                     </h3>
                     {member.role && (
                       <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary">
@@ -149,6 +213,121 @@ function Staff() {
           )}
         </div>
       </section>
+
+      {/* Member Details Popup / Modal */}
+      <Dialog
+        open={Boolean(selectedPerson)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedPerson(null);
+        }}
+      >
+        <DialogContent
+          id="member-detail-modal"
+          className="max-w-md w-[calc(100vw-2rem)] p-6 sm:p-7 rounded-3xl border border-border bg-card shadow-2xl max-h-[90vh] overflow-y-auto"
+        >
+          {selectedPerson && (
+            <div className="flex flex-col items-center text-center">
+              {/* Photo / Avatar */}
+              <div className="mb-4">
+                {selectedPerson.type === "staff" ? (
+                  <StaffMemberAvatar
+                    name={selectedPerson.member.name}
+                    photoUrl={selectedPerson.member.photo_url}
+                    size="large"
+                  />
+                ) : (
+                  <CommitteeMemberAvatar
+                    name={selectedPerson.member.name}
+                    photoUrl={selectedPerson.member.photo_url}
+                    size="large"
+                  />
+                )}
+              </div>
+
+              {/* Title & Role */}
+              <DialogHeader className="w-full text-center space-y-1">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  {selectedPerson.type === "staff" ? "Faculty & Staff" : "Committee Member"}
+                </p>
+                <DialogTitle className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  {selectedPerson.member.name}
+                </DialogTitle>
+                {selectedPerson.member.role && (
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {selectedPerson.member.role}
+                  </p>
+                )}
+              </DialogHeader>
+
+              {/* Contact Information Details */}
+              <div className="mt-6 w-full divide-y divide-border/60 rounded-2xl border border-border bg-muted/30 text-left overflow-hidden">
+                {/* Phone */}
+                <div className="p-4 space-y-1">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Phone className="h-3.5 w-3.5 text-primary" />
+                    Phone:
+                  </span>
+                  {selectedPerson.member.phone?.trim() ? (
+                    <a
+                      href={`tel:${selectedPerson.member.phone.replace(/[^0-9+]/g, "")}`}
+                      className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-foreground hover:text-primary transition-colors py-0.5 focus:outline-none focus-visible:underline"
+                    >
+                      {selectedPerson.member.phone.trim()}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Not provided</p>
+                  )}
+                </div>
+
+                {/* Email */}
+                <div className="p-4 space-y-1">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 text-primary" />
+                    Email:
+                  </span>
+                  {selectedPerson.member.email?.trim() ? (
+                    <a
+                      href={`mailto:${selectedPerson.member.email.trim()}`}
+                      className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-foreground hover:text-primary transition-colors py-0.5 break-all focus:outline-none focus-visible:underline"
+                    >
+                      {selectedPerson.member.email.trim()}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Not provided</p>
+                  )}
+                </div>
+
+                {/* Address */}
+                <div className="p-4 space-y-1">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                    Address:
+                  </span>
+                  {selectedPerson.member.address?.trim() ? (
+                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                      {selectedPerson.member.address.trim()}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Not provided</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Close button */}
+              <div className="mt-6 w-full">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full rounded-xl py-2.5 font-medium"
+                  onClick={() => setSelectedPerson(null)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

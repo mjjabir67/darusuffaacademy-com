@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import logoDark from "@/assets/darusuffa-logo-dark.png";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 
@@ -14,9 +14,22 @@ const nav = [
   { to: "/media", label: "Gallery" },
 ] as const;
 
+const otherLinks = [
+  { to: "/art-literature", label: "Art and Literature" },
+  { to: "/language-door", label: "Language Door" },
+  { to: "/magazine", label: "Magazine" },
+  { to: "/ssf-dawa", label: "SSF Da'wa" },
+] as const;
+
 export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay" }) {
   const [open, setOpen] = useState(false);
+  const [otherDropdownOpen, setOtherDropdownOpen] = useState(false);
   const overlay = variant === "overlay";
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const isOtherActive = otherLinks.some(
+    (l) => pathname === l.to || pathname.startsWith(l.to + "/"),
+  );
 
   return (
     <header
@@ -51,6 +64,46 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
               {item.label}
             </Link>
           ))}
+
+          {/* Other Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setOtherDropdownOpen(true)}
+            onMouseLeave={() => setOtherDropdownOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setOtherDropdownOpen((v) => !v)}
+              className={`flex items-center gap-1 font-display text-sm transition-opacity hover:opacity-100 ${
+                overlay ? "text-ink-foreground/85" : "text-foreground/75"
+              } ${isOtherActive ? "font-semibold opacity-100" : ""}`}
+              aria-expanded={otherDropdownOpen}
+            >
+              <span>Other</span>
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-200 ${
+                  otherDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {otherDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-card p-2 shadow-xl">
+                {otherLinks.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOtherDropdownOpen(false)}
+                    className="block rounded-xl px-3 py-2 font-display text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                    activeProps={{ className: "bg-muted font-semibold text-foreground" }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         <button
@@ -75,6 +128,23 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
               {item.label}
             </Link>
           ))}
+
+          <div className="mt-2 border-t border-border pt-2">
+            <p className="px-1 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Other Pages
+            </p>
+            {otherLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setOpen(false)}
+                className="block py-1.5 pl-2 font-display text-sm text-foreground/80 hover:text-foreground"
+                activeProps={{ className: "font-semibold text-foreground" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </header>

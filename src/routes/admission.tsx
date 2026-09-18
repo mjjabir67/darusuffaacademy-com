@@ -471,7 +471,7 @@ function Admission() {
 
         <div className="relative">
           <img
-            src={students}
+            src={ADMISSION.admissionImage || students}
             alt="Students of Darusuffa Academy studying"
             loading="lazy"
             width={1200}

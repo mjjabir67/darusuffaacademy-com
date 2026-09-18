@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { useContactSettings } from "@/lib/cms";
+import { useContactSettings, useAboutSettings } from "@/lib/cms";
 import {
   Send,
   CheckCircle2,
@@ -43,6 +43,7 @@ export const Route = createFileRoute("/about")({
 
 function About() {
   const CONTACT = useContactSettings();
+  const about = useAboutSettings();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -130,12 +131,12 @@ function About() {
 
         <div>
           <img
-            src={campus}
+            src={about.campusImage || campus}
             alt="Darusuffa Academy building at Vadeesunnah"
             loading="lazy"
             width={1200}
             height={900}
-            className="rounded-3xl object-cover shadow-[var(--shadow-soft)]"
+            className="rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full"
           />
           <Link
             to="/contact"
@@ -155,12 +156,12 @@ function About() {
             Kerala) on 13<sup>th</sup> April 2018.
           </p>
           <img
-            src={heroBooks}
+            src={about.historyImage || heroBooks}
             alt="Classical Islamic texts in the academy library"
             loading="lazy"
             width={1920}
             height={1088}
-            className="rounded-3xl object-cover shadow-[var(--shadow-soft)]"
+            className="rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full"
           />
         </div>
       </section>

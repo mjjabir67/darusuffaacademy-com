@@ -20,6 +20,7 @@ const columns = [
     links: [
       { to: "/language-door", label: "Language Door" },
       { to: "/art-literature", label: "Art and Literature" },
+      { to: "/magazine", label: "Magazine" },
       { to: "/ssf-dawa", label: "SSF da'wa" },
     ],
   },

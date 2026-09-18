@@ -15,14 +15,19 @@ import {
   Check,
   X,
   RefreshCw,
+  Phone,
+  Mail,
+  MapPin,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeading, Panel, EmptyState } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
+import { ImageCropModal } from "@/components/admin/ImageCropModal";
 import {
   uploadMedia,
   deleteStoredMedia,
@@ -36,6 +41,18 @@ export const Route = createFileRoute("/admin/staff")({
   component: StaffAdmin,
 });
 
+function validatePhone(phone?: string | null): boolean {
+  if (!phone || !phone.trim()) return true;
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 6 || digits.length > 16) return false;
+  return /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/.test(phone.trim());
+}
+
+function validateEmail(email?: string | null): boolean {
+  if (!email || !email.trim()) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 function StaffAdmin() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"staff" | "committee">("staff");
@@ -46,6 +63,8 @@ function StaffAdmin() {
   const [staffPhotoPreview, setStaffPhotoPreview] = useState<string | null>(null);
   const [uploadingStaffPhoto, setUploadingStaffPhoto] = useState(false);
   const staffFileInputRef = useRef<HTMLInputElement>(null);
+  const [staffCropImage, setStaffCropImage] = useState<string | null>(null);
+  const [isStaffCropOpen, setIsStaffCropOpen] = useState(false);
 
   // Committee state
   const [committeeList, setCommitteeList] = useState<CommitteeMember[]>(DEFAULT_COMMITTEE);
@@ -53,6 +72,8 @@ function StaffAdmin() {
   const [committeePhotoPreview, setCommitteePhotoPreview] = useState<string | null>(null);
   const [uploadingCommitteePhoto, setUploadingCommitteePhoto] = useState(false);
   const committeeFileInputRef = useRef<HTMLInputElement>(null);
+  const [committeeCropImage, setCommitteeCropImage] = useState<string | null>(null);
+  const [isCommitteeCropOpen, setIsCommitteeCropOpen] = useState(false);
 
   // Global saving indicators
   const [isSavingStaff, setIsSavingStaff] = useState(false);
@@ -64,6 +85,18 @@ function StaffAdmin() {
     item: StaffMember | CommitteeMember;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab");
+      if (tabParam === "committee" || tabParam === "staff") {
+        setActiveTab(tabParam);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Fetch staff settings
   const { data: staffData, isLoading: isLoadingStaff } = useQuery({
@@ -191,6 +224,9 @@ function StaffAdmin() {
       id: crypto.randomUUID(),
       name: "",
       role: "",
+      phone: "",
+      email: "",
+      address: "",
       photo_url: null,
       sort_order: staffList.length + 1,
     };
@@ -199,11 +235,16 @@ function StaffAdmin() {
   };
 
   const handleStartEditStaff = (member: StaffMember) => {
-    setEditingStaff({ ...member });
+    setEditingStaff({
+      ...member,
+      phone: member.phone || "",
+      email: member.email || "",
+      address: member.address || "",
+    });
     setStaffPhotoPreview(member.photo_url || null);
   };
 
-  const handleStaffPhotoSelect = async (file: File) => {
+  const handleStaffPhotoSelect = (file: File) => {
     if (!file) return;
 
     // Validate type
@@ -219,15 +260,23 @@ function StaffAdmin() {
       return;
     }
 
+    // Open image editor modal before uploading
+    const objectUrl = URL.createObjectURL(file);
+    setStaffCropImage(objectUrl);
+    setIsStaffCropOpen(true);
+  };
+
+  const handleConfirmStaffCrop = async (croppedFile: File) => {
     setUploadingStaffPhoto(true);
     try {
-      const url = await uploadMedia(file, "staff");
+      const url = await uploadMedia(croppedFile, "staff");
       if (url) {
         setStaffPhotoPreview(url);
         if (editingStaff) {
-          setEditingStaff({ ...editingStaff, photo_url: url });
+          setEditingStaff((prev) => (prev ? { ...prev, photo_url: url } : null));
         }
-        toast.success("Photo uploaded successfully.");
+        toast.success("Staff photo cropped and uploaded successfully.");
+        handleCloseStaffCrop();
       } else {
         toast.error("Upload failed. Could not retrieve photo URL.");
       }
@@ -236,6 +285,17 @@ function StaffAdmin() {
       toast.error("Failed to upload staff photo.");
     } finally {
       setUploadingStaffPhoto(false);
+    }
+  };
+
+  const handleCloseStaffCrop = () => {
+    if (staffCropImage) {
+      URL.revokeObjectURL(staffCropImage);
+    }
+    setStaffCropImage(null);
+    setIsStaffCropOpen(false);
+    if (staffFileInputRef.current) {
+      staffFileInputRef.current.value = "";
     }
   };
 
@@ -257,10 +317,23 @@ function StaffAdmin() {
       return;
     }
 
+    if (editingStaff.phone && !validatePhone(editingStaff.phone)) {
+      toast.error("Please enter a valid phone number (e.g. +91 99610 09313).");
+      return;
+    }
+
+    if (editingStaff.email && !validateEmail(editingStaff.email)) {
+      toast.error("Please enter a valid email address (e.g. faculty@darusuffa.com).");
+      return;
+    }
+
     const trimmedItem: StaffMember = {
       ...editingStaff,
       name: editingStaff.name.trim(),
       role: editingStaff.role.trim() || "Faculty",
+      phone: editingStaff.phone?.trim() || null,
+      email: editingStaff.email?.trim() || null,
+      address: editingStaff.address?.trim() || null,
       photo_url: staffPhotoPreview || editingStaff.photo_url || null,
     };
 
@@ -296,6 +369,9 @@ function StaffAdmin() {
       id: crypto.randomUUID(),
       name: "",
       role: "Committee Member",
+      phone: "",
+      email: "",
+      address: "",
       photo_url: null,
       sort_order: committeeList.length + 1,
     };
@@ -304,11 +380,16 @@ function StaffAdmin() {
   };
 
   const handleStartEditCommittee = (member: CommitteeMember) => {
-    setEditingCommittee({ ...member });
+    setEditingCommittee({
+      ...member,
+      phone: member.phone || "",
+      email: member.email || "",
+      address: member.address || "",
+    });
     setCommitteePhotoPreview(member.photo_url || null);
   };
 
-  const handleCommitteePhotoSelect = async (file: File) => {
+  const handleCommitteePhotoSelect = (file: File) => {
     if (!file) return;
 
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -322,15 +403,22 @@ function StaffAdmin() {
       return;
     }
 
+    const objectUrl = URL.createObjectURL(file);
+    setCommitteeCropImage(objectUrl);
+    setIsCommitteeCropOpen(true);
+  };
+
+  const handleConfirmCommitteeCrop = async (croppedFile: File) => {
     setUploadingCommitteePhoto(true);
     try {
-      const url = await uploadMedia(file, "committee");
+      const url = await uploadMedia(croppedFile, "committee");
       if (url) {
         setCommitteePhotoPreview(url);
         if (editingCommittee) {
-          setEditingCommittee({ ...editingCommittee, photo_url: url });
+          setEditingCommittee((prev) => (prev ? { ...prev, photo_url: url } : null));
         }
-        toast.success("Photo uploaded successfully.");
+        toast.success("Committee member photo cropped and uploaded successfully.");
+        handleCloseCommitteeCrop();
       } else {
         toast.error("Upload failed. Could not retrieve photo URL.");
       }
@@ -339,6 +427,17 @@ function StaffAdmin() {
       toast.error("Failed to upload committee photo.");
     } finally {
       setUploadingCommitteePhoto(false);
+    }
+  };
+
+  const handleCloseCommitteeCrop = () => {
+    if (committeeCropImage) {
+      URL.revokeObjectURL(committeeCropImage);
+    }
+    setCommitteeCropImage(null);
+    setIsCommitteeCropOpen(false);
+    if (committeeFileInputRef.current) {
+      committeeFileInputRef.current.value = "";
     }
   };
 
@@ -360,10 +459,23 @@ function StaffAdmin() {
       return;
     }
 
+    if (editingCommittee.phone && !validatePhone(editingCommittee.phone)) {
+      toast.error("Please enter a valid phone number (e.g. +91 99610 09313).");
+      return;
+    }
+
+    if (editingCommittee.email && !validateEmail(editingCommittee.email)) {
+      toast.error("Please enter a valid email address (e.g. committee@darusuffa.com).");
+      return;
+    }
+
     const trimmedItem: CommitteeMember = {
       ...editingCommittee,
       name: editingCommittee.name.trim(),
       role: editingCommittee.role?.trim() || "Committee Member",
+      phone: editingCommittee.phone?.trim() || null,
+      email: editingCommittee.email?.trim() || null,
+      address: editingCommittee.address?.trim() || null,
       photo_url: committeePhotoPreview || editingCommittee.photo_url || null,
     };
 
@@ -578,6 +690,59 @@ function StaffAdmin() {
                     />
                   </div>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="staff-phone" className="flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-primary" />
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="staff-phone"
+                        type="tel"
+                        placeholder="e.g. +91 98765 43210"
+                        value={editingStaff.phone || ""}
+                        onChange={(e) =>
+                          setEditingStaff({ ...editingStaff, phone: e.target.value })
+                        }
+                        className="rounded-xl"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="staff-email" className="flex items-center gap-1.5">
+                        <Mail className="h-3.5 w-3.5 text-primary" />
+                        Email Address
+                      </Label>
+                      <Input
+                        id="staff-email"
+                        type="email"
+                        placeholder="e.g. faculty@darusuffa.com"
+                        value={editingStaff.email || ""}
+                        onChange={(e) =>
+                          setEditingStaff({ ...editingStaff, email: e.target.value })
+                        }
+                        className="rounded-xl"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="staff-address" className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-primary" />
+                      Address
+                    </Label>
+                    <Textarea
+                      id="staff-address"
+                      rows={3}
+                      placeholder="e.g. Darusuffa Academy, Kolathur, Malappuram, Kerala - 679338"
+                      value={editingStaff.address || ""}
+                      onChange={(e) =>
+                        setEditingStaff({ ...editingStaff, address: e.target.value })
+                      }
+                      className="rounded-xl resize-y"
+                    />
+                  </div>
+
                   <div className="pt-4 flex items-center gap-3">
                     <Button
                       className="rounded-full gap-2"
@@ -648,6 +813,31 @@ function StaffAdmin() {
                       <p className="text-xs font-semibold uppercase tracking-wider text-primary/90 mt-0.5">
                         {member.role || "Faculty"}
                       </p>
+                      {(member.phone || member.email || member.address) && (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+                          {member.phone && (
+                            <span className="inline-flex items-center gap-1">
+                              <Phone className="h-3 w-3 text-primary" />
+                              {member.phone}
+                            </span>
+                          )}
+                          {member.email && (
+                            <span className="inline-flex items-center gap-1">
+                              <Mail className="h-3 w-3 text-primary" />
+                              {member.email}
+                            </span>
+                          )}
+                          {member.address && (
+                            <span
+                              className="inline-flex items-center gap-1 truncate max-w-[200px]"
+                              title={member.address}
+                            >
+                              <MapPin className="h-3 w-3 text-primary shrink-0" />
+                              <span className="truncate">{member.address}</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -812,6 +1002,59 @@ function StaffAdmin() {
                     />
                   </div>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="committee-phone" className="flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-primary" />
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="committee-phone"
+                        type="tel"
+                        placeholder="e.g. +91 98765 43210"
+                        value={editingCommittee.phone || ""}
+                        onChange={(e) =>
+                          setEditingCommittee({ ...editingCommittee, phone: e.target.value })
+                        }
+                        className="rounded-xl"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="committee-email" className="flex items-center gap-1.5">
+                        <Mail className="h-3.5 w-3.5 text-primary" />
+                        Email Address
+                      </Label>
+                      <Input
+                        id="committee-email"
+                        type="email"
+                        placeholder="e.g. committee@darusuffa.com"
+                        value={editingCommittee.email || ""}
+                        onChange={(e) =>
+                          setEditingCommittee({ ...editingCommittee, email: e.target.value })
+                        }
+                        className="rounded-xl"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="committee-address" className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-primary" />
+                      Address
+                    </Label>
+                    <Textarea
+                      id="committee-address"
+                      rows={3}
+                      placeholder="e.g. Kolathur, Malappuram, Kerala - 679338"
+                      value={editingCommittee.address || ""}
+                      onChange={(e) =>
+                        setEditingCommittee({ ...editingCommittee, address: e.target.value })
+                      }
+                      className="rounded-xl resize-y"
+                    />
+                  </div>
+
                   <div className="pt-4 flex items-center gap-3">
                     <Button
                       className="rounded-full gap-2"
@@ -882,6 +1125,31 @@ function StaffAdmin() {
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
                         {member.role || "Committee Member"}
                       </p>
+                      {(member.phone || member.email || member.address) && (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+                          {member.phone && (
+                            <span className="inline-flex items-center gap-1">
+                              <Phone className="h-3 w-3 text-primary" />
+                              {member.phone}
+                            </span>
+                          )}
+                          {member.email && (
+                            <span className="inline-flex items-center gap-1">
+                              <Mail className="h-3 w-3 text-primary" />
+                              {member.email}
+                            </span>
+                          )}
+                          {member.address && (
+                            <span
+                              className="inline-flex items-center gap-1 truncate max-w-[200px]"
+                              title={member.address}
+                            >
+                              <MapPin className="h-3 w-3 text-primary shrink-0" />
+                              <span className="truncate">{member.address}</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -950,6 +1218,28 @@ function StaffAdmin() {
         description={`Are you sure you want to permanently delete "${deleteTarget?.item.name}"? If a photo is associated, it will also be cleaned up.`}
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
+      />
+
+      {/* Staff Photo Crop & Rotate Modal */}
+      <ImageCropModal
+        open={isStaffCropOpen}
+        imageSrc={staffCropImage}
+        cropShape="round"
+        title="Crop & Rotate Staff Photo"
+        isProcessing={uploadingStaffPhoto}
+        onConfirm={handleConfirmStaffCrop}
+        onClose={handleCloseStaffCrop}
+      />
+
+      {/* Committee Photo Crop & Rotate Modal */}
+      <ImageCropModal
+        open={isCommitteeCropOpen}
+        imageSrc={committeeCropImage}
+        cropShape="rect"
+        title="Crop & Rotate Committee Member Photo"
+        isProcessing={uploadingCommitteePhoto}
+        onConfirm={handleConfirmCommitteeCrop}
+        onClose={handleCloseCommitteeCrop}
       />
     </>
   );

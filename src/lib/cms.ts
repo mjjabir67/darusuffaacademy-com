@@ -72,13 +72,28 @@ export type HomeSettings = {
   heroTitle: string;
   heroSubtitle: string;
   heroDescription: string;
+  heroImage?: string | null;
   primaryCtaLabel: string;
   primaryCtaLink: string;
   secondaryCtaLabel: string;
   secondaryCtaLink: string;
   welcomeTitle: string;
   welcomeText: string;
+  ourStoryImage?: string | null;
+  welcomeImage?: string | null;
   stats: { label: string; value: string }[];
+};
+
+export type AcademicSettings = {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  pageImage?: string | null;
+};
+
+export type AboutSettings = {
+  campusImage?: string | null;
+  historyImage?: string | null;
 };
 
 export type SiteSettings = {
@@ -94,6 +109,9 @@ export type StaffMember = {
   role: string;
   photo_url?: string | null;
   sort_order?: number;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
 };
 
 export type CommitteeMember = {
@@ -102,6 +120,9 @@ export type CommitteeMember = {
   role?: string;
   photo_url?: string | null;
   sort_order?: number;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
 };
 
 export type AdmissionOption = {
@@ -209,6 +230,9 @@ export type AdmissionSettings = {
   enquiryEyebrow: string;
   enquiryTitle: string;
   enquiryDescription: string;
+
+  // Admission Page Image
+  admissionImage?: string | null;
 };
 
 export const DEFAULT_STAFF: StaffMember[] = [
@@ -259,6 +283,7 @@ export const DEFAULT_HOME: HomeSettings = {
   heroTitle: "DARUSUFFA ACADEMY",
   heroSubtitle: "Muhyisunna Integrated Dars",
   heroDescription: "",
+  heroImage: null,
   primaryCtaLabel: "Apply for admission",
   primaryCtaLink: "/admission",
   secondaryCtaLabel: "Know us",
@@ -266,7 +291,22 @@ export const DEFAULT_HOME: HomeSettings = {
   welcomeTitle: "Our Story",
   welcomeText:
     "In 2018, under the patronage of Kolathur Irshadiyya, a new chapter began with the founding of Darussuffa Academy at Vadi Sunnah.",
+  ourStoryImage: null,
+  welcomeImage: null,
   stats: [],
+};
+
+export const DEFAULT_ACADEMIC: AcademicSettings = {
+  eyebrow: "Curriculum",
+  title: "Academics",
+  intro:
+    "A classical Dars tradition carried forward with modern academics, enrichment programmes and well-equipped facilities.",
+  pageImage: null,
+};
+
+export const DEFAULT_ABOUT: AboutSettings = {
+  campusImage: null,
+  historyImage: null,
 };
 
 export const DEFAULT_SITE: SiteSettings = {
@@ -442,6 +482,7 @@ export const DEFAULT_ADMISSION: AdmissionSettings = {
   enquiryTitle: "Send us your enquiry",
   enquiryDescription:
     "Fill in the form below and our admission office will reach out to you with the next steps.",
+  admissionImage: null,
 };
 
 async function fetchSetting<T>(key: string, fallback: T): Promise<T> {
@@ -513,6 +554,22 @@ export function useSiteSettings() {
     queryFn: () => fetchSetting<SiteSettings>("site", DEFAULT_SITE),
   });
   return data ?? DEFAULT_SITE;
+}
+
+export function useAcademicSettings(): AcademicSettings {
+  const { data } = useQuery({
+    queryKey: ["settings", "academic"],
+    queryFn: () => fetchSetting<AcademicSettings>("academic", DEFAULT_ACADEMIC),
+  });
+  return data ?? DEFAULT_ACADEMIC;
+}
+
+export function useAboutSettings(): AboutSettings {
+  const { data } = useQuery({
+    queryKey: ["settings", "about"],
+    queryFn: () => fetchSetting<AboutSettings>("about", DEFAULT_ABOUT),
+  });
+  return data ?? DEFAULT_ABOUT;
 }
 
 export function useStaffMembers() {
@@ -910,4 +967,313 @@ export async function deleteStoredMedia(mediaUrl?: string | null): Promise<boole
   }
 
   return false;
+}
+
+// ==========================================
+// OTHER SECTION: ART & LITERATURE
+// ==========================================
+
+export type ArtLiteratureCard = {
+  id: string;
+  title: string;
+  body: string;
+};
+
+export type ArtLiteratureSettings = {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  bodyContent?: string;
+  imageUrl?: string | null;
+  cards: ArtLiteratureCard[];
+};
+
+export const DEFAULT_ART_LITERATURE: ArtLiteratureSettings = {
+  eyebrow: "Academic wing",
+  title: "Art and Literature",
+  intro:
+    "Creativity as an extension of scholarship — writing, speech and art nurtured alongside the Dars.",
+  bodyContent:
+    "Art and literature at Darusuffa Academy — Amazio arts fest, campus magazines, calligraphy, oratory and creative writing.",
+  imageUrl: null,
+  cards: [
+    {
+      id: "strand-1",
+      title: "Amazio Arts Fest",
+      body: "The flagship literary fest of the institution — a vibrant celebration of knowledge, creativity and cultural expression across the campus.",
+    },
+    {
+      id: "strand-2",
+      title: "Magazines",
+      body: "Student-run periodicals carrying essays, poetry, research notes and reflections in Arabic, English and Malayalam.",
+    },
+    {
+      id: "strand-3",
+      title: "Calligraphy & Design",
+      body: "Workshops in Arabic calligraphy and visual design, connecting classical aesthetics with modern tools.",
+    },
+    {
+      id: "strand-4",
+      title: "Oratory & Debate",
+      body: "Regular stages for public speaking, debate and recitation that build confidence and clarity.",
+    },
+  ],
+};
+
+export function useArtLiteratureSettings(): ArtLiteratureSettings {
+  const { data } = useQuery({
+    queryKey: ["settings", "art_literature"],
+    queryFn: async () => {
+      const raw = await fetchSetting<ArtLiteratureSettings>(
+        "art_literature",
+        DEFAULT_ART_LITERATURE,
+      );
+      return {
+        ...DEFAULT_ART_LITERATURE,
+        ...raw,
+        cards: Array.isArray(raw?.cards) ? raw.cards : DEFAULT_ART_LITERATURE.cards,
+      };
+    },
+  });
+  return data ?? DEFAULT_ART_LITERATURE;
+}
+
+// ==========================================
+// OTHER SECTION: LANGUAGE DOOR
+// ==========================================
+
+export type LanguageDoorCard = {
+  id: string;
+  name: string;
+  note: string;
+};
+
+export type LanguageDoorSettings = {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  bodyContent?: string;
+  imageUrl?: string | null;
+  languages: LanguageDoorCard[];
+};
+
+export const DEFAULT_LANGUAGE_DOOR: LanguageDoorSettings = {
+  eyebrow: "Academic wing",
+  title: "Language Door",
+  intro:
+    "A dedicated wing that opens the doors of language — so that knowledge learned is knowledge shared.",
+  bodyContent:
+    "Language Door at Darusuffa Academy builds fluency in Arabic, English, Urdu and Malayalam through daily practice, camps and public speaking sessions.",
+  imageUrl: null,
+  languages: [
+    {
+      id: "lang-1",
+      name: "Arabic",
+      note: "Classical grammar, composition and conversation rooted in the Dars tradition.",
+    },
+    {
+      id: "lang-2",
+      name: "English",
+      note: "Daily spoken sessions, camps like Engspire and written expression.",
+    },
+    {
+      id: "lang-3",
+      name: "Urdu",
+      note: "Reading and literature circles connecting students to scholarly heritage.",
+    },
+    {
+      id: "lang-4",
+      name: "Malayalam",
+      note: "Oratory, essay and creative writing for the wider community.",
+    },
+  ],
+};
+
+export function useLanguageDoorSettings(): LanguageDoorSettings {
+  const { data } = useQuery({
+    queryKey: ["settings", "language_door"],
+    queryFn: async () => {
+      const raw = await fetchSetting<LanguageDoorSettings>("language_door", DEFAULT_LANGUAGE_DOOR);
+      return {
+        ...DEFAULT_LANGUAGE_DOOR,
+        ...raw,
+        languages: Array.isArray(raw?.languages) ? raw.languages : DEFAULT_LANGUAGE_DOOR.languages,
+      };
+    },
+  });
+  return data ?? DEFAULT_LANGUAGE_DOOR;
+}
+
+// ==========================================
+// OTHER SECTION: MAGAZINE
+// ==========================================
+
+export type MagazineItem = {
+  id: string;
+  title: string;
+  description?: string | null;
+  cover_image?: string | null;
+  publication_date?: string | null;
+  source_type: "pdf" | "link";
+  pdf_url?: string | null;
+  pdf_filename?: string | null;
+  external_url?: string | null;
+  published: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+};
+
+export const DEFAULT_MAGAZINES: MagazineItem[] = [
+  {
+    id: "mag-1",
+    title: "Al-Bayan Annual Magazine",
+    description:
+      "Annual literary magazine featuring research articles, scholarly essays, creative prose, and Arabic poetry from campus students.",
+    cover_image: null,
+    publication_date: "2024",
+    source_type: "link",
+    external_url: "https://example.com/magazine-2024",
+    published: true,
+    sort_order: 1,
+    created_at: "2024-03-01T00:00:00.000Z",
+  },
+  {
+    id: "mag-2",
+    title: "Noorul Huda Campus Edition",
+    description:
+      "Special cultural and academic edition highlighting campus achievements, Amazio fest reflections, and spiritual discourses.",
+    cover_image: null,
+    publication_date: "2023",
+    source_type: "link",
+    external_url: "https://example.com/magazine-2023",
+    published: true,
+    sort_order: 2,
+    created_at: "2023-11-15T00:00:00.000Z",
+  },
+];
+
+export function useMagazines(onlyPublished = false): {
+  magazines: MagazineItem[];
+  isLoading: boolean;
+  refetch: () => void;
+} {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["settings", "magazines"],
+    queryFn: async () => {
+      const raw = await fetchSetting<MagazineItem[]>("magazines", DEFAULT_MAGAZINES);
+      const list = Array.isArray(raw) ? raw : DEFAULT_MAGAZINES;
+      return [...list].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    },
+  });
+
+  const all = data ?? DEFAULT_MAGAZINES;
+  const filtered = onlyPublished ? all.filter((m) => m.published) : all;
+  return { magazines: filtered, isLoading, refetch };
+}
+
+// ==========================================
+// OTHER SECTION: SSF DA'WA
+// ==========================================
+
+export type SsfDawaMediaItem = {
+  id: string;
+  image_url: string;
+  caption?: string;
+  sort_order: number;
+};
+
+export type SsfDawaEvent = {
+  id: string;
+  event_name: string;
+  date?: string | null;
+  description?: string | null;
+  images: SsfDawaMediaItem[];
+  published: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+};
+
+export type SsfDawaSettings = {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  description1?: string;
+  description2?: string;
+  quote?: string;
+  bannerImage?: string | null;
+};
+
+export const DEFAULT_SSF_DAWA_SETTINGS: SsfDawaSettings = {
+  eyebrow: "Campus unit",
+  title: "SSF Darusuffa Da'wa",
+  intro: "Rooted in the values of truth, tolerance and wisdom.",
+  description1:
+    "Our institution proudly hosts an active SSF Da'wa Unit, functioning under the spiritual and intellectual guidance of the Sunni Students' Federation (SSF). The unit is dedicated to promoting the peaceful message of Islam through knowledge, character and service.",
+  description2:
+    "Through study circles, campus programmes, social service drives and community outreach, the unit trains students to carry the teachings of the Qur'an and Sunnah with wisdom and good conduct — engaging society with compassion rather than confrontation.",
+  quote: "Invite to the way of your Lord with wisdom and beautiful preaching.",
+  bannerImage: null,
+};
+
+export const DEFAULT_SSF_DAWA_EVENTS: SsfDawaEvent[] = [
+  {
+    id: "ssf-ev-1",
+    event_name: "Annual Da'wa Meet & Moral Study Circle",
+    date: "2024-02-15",
+    description:
+      "Campus-wide moral study circle gathering students and teachers to reflect on Islamic leadership, community responsibility, and dawah ethics.",
+    images: [],
+    published: true,
+    sort_order: 1,
+    created_at: "2024-02-15T00:00:00.000Z",
+  },
+  {
+    id: "ssf-ev-2",
+    event_name: "Community Outreach & Service Drive",
+    date: "2023-11-20",
+    description:
+      "Students volunteering in local community care, educational support, and peaceful message dissemination across the region.",
+    images: [],
+    published: true,
+    sort_order: 2,
+    created_at: "2023-11-20T00:00:00.000Z",
+  },
+];
+
+export function useSsfDawaSettings(): SsfDawaSettings {
+  const { data } = useQuery({
+    queryKey: ["settings", "ssf_dawa_settings"],
+    queryFn: async () => {
+      const raw = await fetchSetting<SsfDawaSettings>(
+        "ssf_dawa_settings",
+        DEFAULT_SSF_DAWA_SETTINGS,
+      );
+      return {
+        ...DEFAULT_SSF_DAWA_SETTINGS,
+        ...raw,
+      };
+    },
+  });
+  return data ?? DEFAULT_SSF_DAWA_SETTINGS;
+}
+
+export function useSsfDawaEvents(onlyPublished = false): {
+  events: SsfDawaEvent[];
+  isLoading: boolean;
+  refetch: () => void;
+} {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["settings", "ssf_dawa_events"],
+    queryFn: async () => {
+      const raw = await fetchSetting<SsfDawaEvent[]>("ssf_dawa_events", DEFAULT_SSF_DAWA_EVENTS);
+      const list = Array.isArray(raw) ? raw : DEFAULT_SSF_DAWA_EVENTS;
+      return [...list].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    },
+  });
+
+  const all = data ?? DEFAULT_SSF_DAWA_EVENTS;
+  const filtered = onlyPublished ? all.filter((e) => e.published) : all;
+  return { events: filtered, isLoading, refetch };
 }

@@ -55,7 +55,7 @@ function Home() {
         {/* Hero */}
         <section className="relative min-h-[78vh] overflow-hidden">
           <img
-            src={heroBooks}
+            src={home.heroImage || heroBooks}
             alt="Shelves of classical Islamic texts in the academy library"
             width={1920}
             height={1088}
@@ -104,9 +104,9 @@ function Home() {
 
           <div className="relative mx-auto max-w-6xl px-5 py-24 text-ink-foreground">
             <div className="grid items-stretch gap-0 overflow-hidden rounded-3xl bg-white/10 backdrop-blur-sm md:grid-cols-2">
-              <div className="relative h-full">
+              <div className="relative h-full min-h-[260px] sm:min-h-[340px]">
                 <img
-                  src={studentsHallAsset.url}
+                  src={home.ourStoryImage || home.welcomeImage || studentsHallAsset.url}
                   alt="Students of Darusuffa Academy studying together in the campus hall"
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover object-center"

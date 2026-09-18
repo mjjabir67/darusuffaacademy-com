@@ -39,6 +39,8 @@ import { AdmissionApplicationsTab } from "@/components/admin/admission/Admission
 import { AdmissionInformationTab } from "@/components/admin/admission/AdmissionInformationTab";
 import { AdmissionFormFieldsTab } from "@/components/admin/admission/AdmissionFormFieldsTab";
 import { AdmissionDownloadFormTab } from "@/components/admin/admission/AdmissionDownloadFormTab";
+import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
+import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admin/admission")({
   component: AdmissionAdmin,
@@ -274,6 +276,30 @@ export default function AdmissionAdmin() {
 
           {/* TAB 5: PAGE CONTENT & STEPS */}
           <TabsContent value="page-content" className="space-y-6 mt-0">
+            {/* Admission Page Feature Image */}
+            <Panel title="Admission Page Feature Image">
+              <ImageFieldManager
+                label="Holistic Growth & Integrated Education Image"
+                description="Photo displayed alongside the 'Integrated Education with Purpose' section on the public Admission page."
+                currentImageUrl={form.admissionImage}
+                defaultImageUrl={students}
+                storageFolder="admission"
+                cropShape="rect"
+                aspectRatio={4 / 3}
+                modalTitle="Crop & Adjust Admission Page Image"
+                onSave={async (url) => {
+                  set({ admissionImage: url });
+                  await supabase
+                    .from("site_settings")
+                    .upsert(
+                      { key: "admission", value: { ...form, admissionImage: url } },
+                      { onConflict: "key" },
+                    );
+                  queryClient.invalidateQueries({ queryKey: ["settings", "admission"] });
+                }}
+              />
+            </Panel>
+
             {/* Page Header Texts */}
             <Panel title="Header &amp; Overview Texts">
               <div className="space-y-4">

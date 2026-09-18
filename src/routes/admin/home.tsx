@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 import { DEFAULT_HOME, type HomeSettings } from "@/lib/cms";
+import heroBooks from "@/assets/hero-books.jpg";
+import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
 
 export const Route = createFileRoute("/admin/home")({
   component: HomeAdmin,
@@ -86,6 +89,26 @@ function HomeAdmin() {
                 onChange={(e) => set({ heroDescription: e.target.value })}
               />
             </div>
+            <div className="space-y-2 md:col-span-2 pt-3 border-t border-border">
+              <ImageFieldManager
+                label="Banner Background Image"
+                description="Background photo displayed behind the main hero title on the Home page."
+                currentImageUrl={form.heroImage}
+                defaultImageUrl={heroBooks}
+                storageFolder="home"
+                cropShape="rect"
+                aspectRatio={16 / 9}
+                modalTitle="Crop & Adjust Banner Background"
+                onSave={async (url) => {
+                  const updated = { ...form, heroImage: url };
+                  set({ heroImage: url });
+                  await supabase
+                    .from("site_settings")
+                    .upsert({ key: "home", value: updated }, { onConflict: "key" });
+                  queryClient.invalidateQueries({ queryKey: ["settings", "home"] });
+                }}
+              />
+            </div>
           </div>
         </Panel>
 
@@ -126,10 +149,29 @@ function HomeAdmin() {
           </div>
         </Panel>
 
-        <Panel title="Welcome section">
+        <Panel title="Our Story Section">
           <div className="space-y-5">
+            <ImageFieldManager
+              label="Our Story Image"
+              description="Photo displayed in the Our Story section on the Home page next to the narrative."
+              currentImageUrl={form.ourStoryImage || form.welcomeImage}
+              defaultImageUrl={studentsHallAsset.url}
+              storageFolder="home"
+              cropShape="rect"
+              aspectRatio={4 / 3}
+              modalTitle="Crop & Adjust Our Story Photo"
+              onSave={async (url) => {
+                const updated = { ...form, ourStoryImage: url, welcomeImage: url };
+                set({ ourStoryImage: url, welcomeImage: url });
+                await supabase
+                  .from("site_settings")
+                  .upsert({ key: "home", value: updated }, { onConflict: "key" });
+                queryClient.invalidateQueries({ queryKey: ["settings", "home"] });
+              }}
+            />
+
             <div className="space-y-2">
-              <Label htmlFor="welcomeTitle">Heading</Label>
+              <Label htmlFor="welcomeTitle">Section Heading</Label>
               <Input
                 id="welcomeTitle"
                 value={form.welcomeTitle}
@@ -137,7 +179,7 @@ function HomeAdmin() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="welcomeText">Text</Label>
+              <Label htmlFor="welcomeText">Story / Welcome Text</Label>
               <Textarea
                 id="welcomeText"
                 rows={6}

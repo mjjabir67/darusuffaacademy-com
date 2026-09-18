@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/site/PageShell";
+import { useAcademicSettings } from "@/lib/cms";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/academic")({
@@ -53,11 +54,16 @@ const programmes = [
 ] as const;
 
 function Academic() {
+  const academic = useAcademicSettings();
+
   return (
     <PageShell
-      eyebrow="Curriculum"
-      title="Academics"
-      intro="A classical Dars tradition carried forward with modern academics, enrichment programmes and well-equipped facilities."
+      eyebrow={academic.eyebrow || "Curriculum"}
+      title={academic.title || "Academics"}
+      intro={
+        academic.intro ||
+        "A classical Dars tradition carried forward with modern academics, enrichment programmes and well-equipped facilities."
+      }
     >
       <section className="mx-auto grid max-w-6xl gap-10 px-5 py-20 md:grid-cols-[1.1fr_1fr]">
         <div className="space-y-10">
@@ -76,12 +82,12 @@ function Academic() {
           ))}
         </div>
         <img
-          src={students}
+          src={academic.pageImage || students}
           alt="Students of the Muhyissunna integrated Dars"
           loading="lazy"
           width={1200}
           height={900}
-          className="h-full rounded-3xl object-cover shadow-[var(--shadow-soft)]"
+          className="h-full rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full"
         />
       </section>
 

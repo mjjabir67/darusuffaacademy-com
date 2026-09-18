@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { uploadMedia, deleteStoredMedia, type Course } from "@/lib/cms";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
+import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 
 export const Route = createFileRoute("/admin/courses")({
   component: CoursesAdmin,
@@ -156,23 +157,16 @@ function CoursesAdmin() {
               />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="image">Image (optional)</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleUpload(file);
-                }}
+              <ImageFieldManager
+                label="Course Image (optional)"
+                description="Photo displayed on the course card across academic and admission pages."
+                currentImageUrl={draft.image_url}
+                storageFolder="courses"
+                cropShape="rect"
+                aspectRatio={16 / 9}
+                modalTitle="Crop & Adjust Course Image"
+                onSave={(url) => set({ image_url: url ?? "" })}
               />
-              {draft.image_url && (
-                <img
-                  src={draft.image_url}
-                  alt="Selected"
-                  className="mt-2 h-32 w-auto rounded-xl object-cover"
-                />
-              )}
             </div>
             <div className="flex items-center gap-3">
               <Switch

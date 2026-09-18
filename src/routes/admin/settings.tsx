@@ -9,7 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { DEFAULT_CONTACT, DEFAULT_SITE, type ContactSettings, type SiteSettings } from "@/lib/cms";
+import {
+  DEFAULT_CONTACT,
+  DEFAULT_SITE,
+  DEFAULT_ABOUT,
+  type ContactSettings,
+  type SiteSettings,
+  type AboutSettings,
+} from "@/lib/cms";
+import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
+import campus from "@/assets/campus.jpg";
+import heroBooks from "@/assets/hero-books.jpg";
 
 export const Route = createFileRoute("/admin/settings")({
   component: SettingsAdmin,
@@ -19,6 +29,7 @@ function SettingsAdmin() {
   const queryClient = useQueryClient();
   const [contact, setContact] = useState<ContactSettings>(DEFAULT_CONTACT);
   const [site, setSite] = useState<SiteSettings>(DEFAULT_SITE);
+  const [about, setAbout] = useState<AboutSettings>(DEFAULT_ABOUT);
   const [saving, setSaving] = useState(false);
 
   // Admin Account state
@@ -43,6 +54,7 @@ function SettingsAdmin() {
       return {
         contact: { ...DEFAULT_CONTACT, ...(byKey("contact") ?? {}) } as ContactSettings,
         site: { ...DEFAULT_SITE, ...(byKey("site") ?? {}) } as SiteSettings,
+        about: { ...DEFAULT_ABOUT, ...(byKey("about") ?? {}) } as AboutSettings,
       };
     },
   });
@@ -51,6 +63,7 @@ function SettingsAdmin() {
     if (data) {
       setContact(data.contact);
       setSite(data.site);
+      setAbout(data.about);
     }
   }, [data]);
 
@@ -74,6 +87,7 @@ function SettingsAdmin() {
       [
         { key: "contact", value: contact },
         { key: "site", value: site },
+        { key: "about", value: about },
       ],
       { onConflict: "key" },
     );
@@ -513,6 +527,50 @@ function SettingsAdmin() {
                 rows={2}
                 value={site.seoDescription}
                 onChange={(e) => setSite({ ...site, seoDescription: e.target.value })}
+              />
+            </div>
+          </div>
+        </Panel>
+
+        <Panel title="About Page Images">
+          <div className="space-y-6">
+            <ImageFieldManager
+              label="Campus Building Image"
+              description="Photo displayed in the About Us section showing the academy campus."
+              currentImageUrl={about.campusImage}
+              defaultImageUrl={campus}
+              storageFolder="about"
+              cropShape="rect"
+              aspectRatio={4 / 3}
+              modalTitle="Crop & Adjust Campus Image"
+              onSave={async (url) => {
+                const updated = { ...about, campusImage: url };
+                setAbout(updated);
+                await supabase
+                  .from("site_settings")
+                  .upsert({ key: "about", value: updated }, { onConflict: "key" });
+                queryClient.invalidateQueries({ queryKey: ["settings", "about"] });
+              }}
+            />
+
+            <div className="pt-2 border-t border-border">
+              <ImageFieldManager
+                label="History & Foundation Image"
+                description="Photo displayed alongside the founding history and inauguration details on the About page."
+                currentImageUrl={about.historyImage}
+                defaultImageUrl={heroBooks}
+                storageFolder="about"
+                cropShape="rect"
+                aspectRatio={16 / 9}
+                modalTitle="Crop & Adjust History Image"
+                onSave={async (url) => {
+                  const updated = { ...about, historyImage: url };
+                  setAbout(updated);
+                  await supabase
+                    .from("site_settings")
+                    .upsert({ key: "about", value: updated }, { onConflict: "key" });
+                  queryClient.invalidateQueries({ queryKey: ["settings", "about"] });
+                }}
               />
             </div>
           </div>

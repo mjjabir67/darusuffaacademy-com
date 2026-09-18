@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { slugify, uploadMedia, deleteStoredMedia, formatDate, type Post } from "@/lib/cms";
 import { EventMediaManager } from "@/components/admin/EventMediaManager";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
+import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 
 export const Route = createFileRoute("/admin/news")({
   component: NewsAdmin,
@@ -257,23 +258,16 @@ function NewsAdmin() {
               />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="image">Image</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleUpload(file);
-                }}
+              <ImageFieldManager
+                label="Featured Image"
+                description="Photo displayed in the news/event card and detail modal."
+                currentImageUrl={draft.image_url}
+                storageFolder="posts"
+                cropShape="rect"
+                aspectRatio={16 / 9}
+                modalTitle="Crop & Adjust Event Image"
+                onSave={(url) => set({ image_url: url ?? "" })}
               />
-              {draft.image_url && (
-                <img
-                  src={draft.image_url}
-                  alt="Selected"
-                  className="mt-2 h-32 w-auto rounded-xl object-cover"
-                />
-              )}
             </div>
             <div className="flex items-center gap-3">
               <Switch

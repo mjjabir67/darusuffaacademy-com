@@ -15,6 +15,7 @@ import {
   Megaphone,
   Images,
   GraduationCap,
+  BookOpen,
   Users,
   Settings,
   LogOut,
@@ -22,6 +23,7 @@ import {
   X,
   ExternalLink,
   FileText,
+  Layers,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,13 +56,15 @@ export const Route = createFileRoute("/admin")({
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/home", label: "Home Page", icon: Home },
+  { to: "/admin/academic", label: "Academic", icon: GraduationCap },
   { to: "/admin/admission", label: "Admission", icon: FileText },
+  { to: "/admin/courses", label: "Courses", icon: BookOpen },
   { to: "/admin/news", label: "News & Events", icon: Newspaper },
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
   { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
-  { to: "/admin/courses", label: "Courses", icon: GraduationCap },
   { to: "/admin/staff", label: "Staff & Committee", icon: Users },
+  { to: "/admin/other", label: "Other", icon: Layers },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ] as const;
 
