@@ -997,6 +997,13 @@ export async function uploadMedia(file: File, folder = "uploads") {
       console.warn("Storage upload failed, falling back to data URL:", error);
       return await fileToDataUrl(file);
     }
+    // Return direct signed URL valid for 10 years (works everywhere: Firebase, Vercel, static preview, Node)
+    const { data: signedData } = await supabase.storage
+      .from("site-media")
+      .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+    if (signedData?.signedUrl) {
+      return signedData.signedUrl;
+    }
     return `/api/public/media/${path}`;
   } catch (err) {
     console.warn("Storage upload exception, falling back to data URL:", err);
@@ -1032,12 +1039,51 @@ export function extractStoragePath(mediaUrl?: string | null): string | null {
   if (proxyMatch?.[1]) {
     return decodeURIComponent(proxyMatch[1].split("?")[0]);
   }
+  // If it's a Supabase storage signed URL: .../storage/v1/object/sign/site-media/path/to/file.ext?...
+  const signedMatch = mediaUrl.match(/\/storage\/v1\/object\/sign\/site-media\/(.+?)(\?|$)/);
+  if (signedMatch?.[1]) {
+    return decodeURIComponent(signedMatch[1]);
+  }
   // If it's a direct Supabase storage public URL: .../storage/v1/object/public/site-media/path/to/file.ext
-  const directMatch = mediaUrl.match(/\/storage\/v1\/object\/public\/site-media\/(.+)$/);
+  const directMatch = mediaUrl.match(/\/storage\/v1\/object\/public\/site-media\/(.+?)(\?|$)/);
   if (directMatch?.[1]) {
-    return decodeURIComponent(directMatch[1].split("?")[0]);
+    return decodeURIComponent(directMatch[1]);
   }
   return null;
+}
+
+/**
+ * Resolves a media URL to an accessible URL.
+ * If the URL is a relative proxy (/api/public/media/...) and running on a client without a Node server (e.g. Firebase Hosting static),
+ * this asynchronously obtains a direct signed URL from Supabase storage so the image displays reliably.
+ */
+const _resolvedMediaCache = new Map<string, string>();
+
+export async function resolveMediaUrl(url?: string | null): Promise<string> {
+  if (!url) return "";
+  // If already absolute or data URL, return directly
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
+    return url;
+  }
+  // If in cache, return cached version
+  if (_resolvedMediaCache.has(url)) {
+    return _resolvedMediaCache.get(url)!;
+  }
+  const storagePath = extractStoragePath(url);
+  if (storagePath) {
+    try {
+      const { data } = await supabase.storage
+        .from("site-media")
+        .createSignedUrl(storagePath, 60 * 60 * 24 * 365 * 10);
+      if (data?.signedUrl) {
+        _resolvedMediaCache.set(url, data.signedUrl);
+        return data.signedUrl;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return url;
 }
 
 /**

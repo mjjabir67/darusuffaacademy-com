@@ -51,12 +51,12 @@ function createSupabaseAdminClient() {
   const SUPABASE_URL =
     process.env["SUPABASE_URL"] ||
     process.env["VITE_SUPABASE_URL"] ||
-    "https://placeholder.supabase.co";
+    "https://jqowyloiqhtgskuybhnc.supabase.co";
   const SUPABASE_SERVICE_ROLE_KEY =
     process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
     process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
     process.env["SUPABASE_PUBLISHABLE_KEY"] ||
-    "sb_secret_placeholder_mock";
+    "sb_publishable_U1p5kU5_UID5TH4MijABGQ_lwjjFq-y";
 
   if (
     !process.env["SUPABASE_URL"] &&
