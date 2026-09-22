@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import logoDark from "@/assets/darusuffa-logo-dark.png";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
@@ -24,12 +24,55 @@ const otherLinks = [
 export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay" }) {
   const [open, setOpen] = useState(false);
   const [otherDropdownOpen, setOtherDropdownOpen] = useState(false);
+  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const overlay = variant === "overlay";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const isOtherActive = otherLinks.some(
     (l) => pathname === l.to || pathname.startsWith(l.to + "/"),
   );
+
+  const handleMouseEnter = () => {
+    if (dropdownTimerRef.current) {
+      clearTimeout(dropdownTimerRef.current);
+      dropdownTimerRef.current = null;
+    }
+    setOtherDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (dropdownTimerRef.current) {
+      clearTimeout(dropdownTimerRef.current);
+    }
+    dropdownTimerRef.current = setTimeout(() => {
+      setOtherDropdownOpen(false);
+    }, 200);
+  };
+
+  // Close dropdown on click outside or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOtherDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOtherDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+      if (dropdownTimerRef.current) {
+        clearTimeout(dropdownTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header
@@ -67,17 +110,19 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
 
           {/* Other Dropdown */}
           <div
-            className="relative"
-            onMouseEnter={() => setOtherDropdownOpen(true)}
-            onMouseLeave={() => setOtherDropdownOpen(false)}
+            ref={dropdownRef}
+            className="relative py-1"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <button
               type="button"
               onClick={() => setOtherDropdownOpen((v) => !v)}
-              className={`flex items-center gap-1 font-display text-sm transition-opacity hover:opacity-100 ${
+              className={`flex items-center gap-1 font-display text-sm transition-opacity hover:opacity-100 cursor-pointer ${
                 overlay ? "text-ink-foreground/85" : "text-foreground/75"
               } ${isOtherActive ? "font-semibold opacity-100" : ""}`}
               aria-expanded={otherDropdownOpen}
+              aria-haspopup="true"
             >
               <span>Other</span>
               <ChevronDown
@@ -89,18 +134,24 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
             </button>
 
             {otherDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-card p-2 shadow-xl">
-                {otherLinks.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setOtherDropdownOpen(false)}
-                    className="block rounded-xl px-3 py-2 font-display text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
-                    activeProps={{ className: "bg-muted font-semibold text-foreground" }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div
+                className="absolute right-0 top-full pt-2 z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="w-56 rounded-2xl border border-border bg-card p-2 shadow-xl ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 duration-150">
+                  {otherLinks.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setOtherDropdownOpen(false)}
+                      className="block rounded-xl px-3 py-2 font-display text-sm text-foreground/85 transition-colors hover:bg-muted hover:text-foreground"
+                      activeProps={{ className: "bg-muted font-semibold text-foreground" }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>

@@ -40,6 +40,8 @@ import { AdmissionInformationTab } from "@/components/admin/admission/AdmissionI
 import { AdmissionFormFieldsTab } from "@/components/admin/admission/AdmissionFormFieldsTab";
 import { AdmissionDownloadFormTab } from "@/components/admin/admission/AdmissionDownloadFormTab";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
+import { Image as ImageIcon } from "lucide-react";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admin/admission")({
@@ -60,7 +62,11 @@ export default function AdmissionAdmin() {
     queryKey: ["admin", "admission-applications"],
     queryFn: async () => {
       try {
-        const res = await fetch("/api/admissions/applications");
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        const res = await fetch("/api/admissions/applications", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         if (res.ok) {
           const json = await res.json();
           if (Array.isArray(json.applications)) return json.applications;
@@ -68,14 +74,9 @@ export default function AdmissionAdmin() {
       } catch {
         // fallback
       }
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "admission_applications")
-        .maybeSingle();
-      if (!data || !Array.isArray(data.value)) return [];
-      return data.value as AdmissionApplication[];
+      return [];
     },
+    refetchInterval: 5000,
   });
 
   // Load current settings from site_settings table
@@ -252,7 +253,22 @@ export default function AdmissionAdmin() {
               <FileText size={16} />
               Page Content &amp; Steps
             </TabsTrigger>
+
+            <TabsTrigger value="banner" className="gap-2 rounded-lg py-2">
+              <ImageIcon size={16} />
+              Banner Image
+            </TabsTrigger>
           </TabsList>
+
+          {/* TAB: BANNER IMAGE */}
+          <TabsContent value="banner" className="space-y-6 mt-0">
+            <PageBannerFieldManager
+              pageKey="admission"
+              pageTitle="Admission"
+              pageDescription="Top hero banner image displayed across the header of the public Admission page behind the title."
+              liveUrl="/admission"
+            />
+          </TabsContent>
 
           {/* TAB 1: APPLICATIONS */}
           <TabsContent value="applications" className="space-y-6 mt-0">
@@ -276,6 +292,14 @@ export default function AdmissionAdmin() {
 
           {/* TAB 5: PAGE CONTENT & STEPS */}
           <TabsContent value="page-content" className="space-y-6 mt-0">
+            {/* Admission Hero Banner Image */}
+            <PageBannerFieldManager
+              pageKey="admission"
+              pageTitle="Admission"
+              pageDescription="Top hero banner image displayed across the header of the public Admission page behind the title."
+              liveUrl="/admission"
+            />
+
             {/* Admission Page Feature Image */}
             <Panel title="Admission Page Feature Image">
               <ImageFieldManager

@@ -28,24 +28,6 @@ function Enquiries() {
       if (error) throw error;
 
       const allRows = (data ?? []) as Enquiry[];
-      // Filter out any admission applications that may have entered the enquiries table previously
-      const misclassified = allRows.filter((e) => e.message?.includes("[ADMISSION APPLICATION]"));
-      if (misclassified.length > 0) {
-        // Trigger background migration endpoint so they are safely moved to admission_applications
-        (async () => {
-          try {
-            const { data: sessionData } = await supabase.auth.getSession();
-            const token = sessionData.session?.access_token;
-            await fetch("/api/admissions/applications", {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            queryClient.invalidateQueries({ queryKey: ["admin", "enquiries"] });
-            queryClient.invalidateQueries({ queryKey: ["admin", "admission-applications"] });
-          } catch {
-            // ignore
-          }
-        })();
-      }
       return allRows.filter((e) => !e.message?.includes("[ADMISSION APPLICATION]"));
     },
   });

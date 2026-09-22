@@ -80,7 +80,7 @@ export function AdmissionApplicationsTab() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
-  // Fetch applications from server API or site_settings
+  // Fetch real-time applications from server API
   const {
     data: applications = [],
     isLoading,
@@ -101,21 +101,12 @@ export function AdmissionApplicationsTab() {
             return json.applications;
           }
         }
-      } catch {
-        // Fallback to client Supabase
+      } catch (err) {
+        console.warn("Failed to fetch applications:", err);
       }
-
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "admission_applications")
-        .maybeSingle();
-
-      if (error || !data || !Array.isArray(data.value)) {
-        return [];
-      }
-      return data.value as AdmissionApplication[];
+      return [];
     },
+    refetchInterval: 5000,
   });
 
   const handleStatusChange = async (appId: string, newStatus: AdmissionApplicationStatus) => {

@@ -89,12 +89,16 @@ export type AcademicSettings = {
   title?: string;
   intro?: string;
   pageImage?: string | null;
+  bannerImage?: string | null;
 };
 
 export type AboutSettings = {
   campusImage?: string | null;
   historyImage?: string | null;
+  bannerImage?: string | null;
 };
+
+export type PageBanners = Record<string, string | null>;
 
 export type SiteSettings = {
   siteName: string;
@@ -307,6 +311,22 @@ export const DEFAULT_ACADEMIC: AcademicSettings = {
 export const DEFAULT_ABOUT: AboutSettings = {
   campusImage: null,
   historyImage: null,
+  bannerImage: null,
+};
+
+export const DEFAULT_PAGE_BANNERS: PageBanners = {
+  about: null,
+  admission: null,
+  academic: null,
+  staff: null,
+  gallery: null,
+  media: null,
+  news: null,
+  "art-literature": null,
+  "language-door": null,
+  magazine: null,
+  "ssf-dawa": null,
+  contact: null,
 };
 
 export const DEFAULT_SITE: SiteSettings = {
@@ -570,6 +590,88 @@ export function useAboutSettings(): AboutSettings {
     queryFn: () => fetchSetting<AboutSettings>("about", DEFAULT_ABOUT),
   });
   return data ?? DEFAULT_ABOUT;
+}
+
+export function usePageBanners(): PageBanners {
+  const { data } = useQuery({
+    queryKey: ["settings", "page_banners"],
+    queryFn: async () => {
+      const raw = await fetchSetting<PageBanners>("page_banners", DEFAULT_PAGE_BANNERS);
+      return {
+        ...DEFAULT_PAGE_BANNERS,
+        ...(raw && typeof raw === "object" ? raw : {}),
+      };
+    },
+  });
+  return data ?? DEFAULT_PAGE_BANNERS;
+}
+
+export function usePageBanner(pageKey?: string | null): string | null {
+  const banners = usePageBanners();
+  const academic = useAcademicSettings();
+  const about = useAboutSettings();
+
+  if (!pageKey) return null;
+  const normalizedKey = pageKey.toLowerCase().replace(/^\//, "").trim();
+
+  // Direct lookup from page_banners
+  if (banners[normalizedKey]) return banners[normalizedKey];
+
+  // Specific fallback to page-level settings if configured there
+  if (normalizedKey === "academic" && academic.bannerImage) {
+    return academic.bannerImage;
+  }
+  if (normalizedKey === "about" && about.bannerImage) {
+    return about.bannerImage;
+  }
+
+  // Common aliases
+  if (normalizedKey === "gallery" && banners.media) return banners.media;
+  if (normalizedKey === "media" && banners.gallery) return banners.gallery;
+  if (normalizedKey === "news" && (banners.events || banners["news-events"])) {
+    return banners.events || banners["news-events"];
+  }
+  if (normalizedKey === "events" && banners.news) return banners.news;
+
+  return null;
+}
+
+export async function updatePageBanner(pageKey: string, url: string | null): Promise<void> {
+  const normalizedKey = pageKey.toLowerCase().replace(/^\//, "").trim();
+
+  // Fetch current page_banners
+  const { data: currentRecord } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "page_banners")
+    .maybeSingle();
+
+  const currentObj =
+    currentRecord?.value && typeof currentRecord.value === "object"
+      ? (currentRecord.value as Record<string, string | null>)
+      : {};
+
+  const updated: Record<string, string | null> = {
+    ...DEFAULT_PAGE_BANNERS,
+    ...currentObj,
+    [normalizedKey]: url,
+  };
+
+  // Sync common aliases
+  if (normalizedKey === "gallery") updated.media = url;
+  if (normalizedKey === "media") updated.gallery = url;
+  if (normalizedKey === "news") updated.events = url;
+  if (normalizedKey === "events") updated.news = url;
+
+  const { error } = await supabase.from("site_settings").upsert(
+    {
+      key: "page_banners",
+      value: updated,
+    },
+    { onConflict: "key" },
+  );
+
+  if (error) throw error;
 }
 
 export function useStaffMembers() {

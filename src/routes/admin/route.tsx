@@ -24,6 +24,7 @@ import {
   ExternalLink,
   FileText,
   Layers,
+  UserCheck,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +59,7 @@ const NAV = [
   { to: "/admin/home", label: "Home Page", icon: Home },
   { to: "/admin/academic", label: "Academic", icon: GraduationCap },
   { to: "/admin/admission", label: "Admission", icon: FileText },
+  { to: "/admin/students", label: "Students & Works", icon: UserCheck },
   { to: "/admin/courses", label: "Courses", icon: BookOpen },
   { to: "/admin/news", label: "News & Events", icon: Newspaper },
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
@@ -89,7 +91,7 @@ function AdminLayout() {
     refetchInterval: 30000,
   });
 
-  // New admission applications count (strictly from admission_applications data structure)
+  // New admission applications count (strictly from real-time admission_applications)
   const { data: newApplicationsCount = 0 } = useQuery({
     queryKey: ["admin", "new-applications-count"],
     queryFn: async () => {
@@ -108,17 +110,30 @@ function AdminLayout() {
       } catch {
         // fallback
       }
+      return 0;
+    },
+    refetchInterval: 10000,
+  });
+
+  // Pending student submissions count
+  const { data: pendingSubmissionsCount = 0 } = useQuery({
+    queryKey: ["admin", "pending-submissions-count"],
+    queryFn: async () => {
       try {
-        const { data } = await supabase
-          .from("site_settings")
-          .select("value")
-          .eq("key", "admission_applications")
-          .maybeSingle();
-        if (data && Array.isArray(data.value)) {
-          return (data.value as { status?: string }[]).filter((a) => a.status === "New").length;
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return 0;
+        const res = await fetch("/api/admin/submissions?status=Submitted", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json.submissions)) {
+            return json.submissions.length;
+          }
         }
-      } catch (err) {
-        console.warn("[AdminNav] Count fetch error:", err);
+      } catch {
+        // fallback
       }
       return 0;
     },
@@ -150,7 +165,9 @@ function AdminLayout() {
               ? newApplicationsCount
               : to === "/admin/enquiries"
                 ? unreadEnquiriesCount
-                : 0;
+                : to === "/admin/students"
+                  ? pendingSubmissionsCount
+                  : 0;
 
           return (
             <Link
@@ -169,7 +186,9 @@ function AdminLayout() {
                   className={`ml-auto rounded-full px-2 py-0.5 text-xs font-semibold ${
                     to === "/admin/admission"
                       ? "bg-blue-500/30 text-blue-200 border border-blue-400/30"
-                      : "bg-emerald-500/30 text-emerald-200 border border-emerald-400/30"
+                      : to === "/admin/students"
+                        ? "bg-amber-500/30 text-amber-200 border border-amber-400/30"
+                        : "bg-emerald-500/30 text-emerald-200 border border-emerald-400/30"
                   }`}
                 >
                   {badgeCount}

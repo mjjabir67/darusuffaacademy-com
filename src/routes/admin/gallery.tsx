@@ -20,6 +20,7 @@ import {
   type Post,
 } from "@/lib/cms";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 
 export const Route = createFileRoute("/admin/gallery")({
   component: GalleryAdmin,
@@ -319,6 +320,13 @@ function GalleryAdmin() {
       <PageHeading
         title="Gallery"
         description="Upload and manage the photos and albums shown in the media gallery."
+      />
+
+      <PageBannerFieldManager
+        pageKey="gallery"
+        pageTitle="Gallery"
+        pageDescription="Top hero banner image displayed across the header of the public Gallery page behind the title."
+        liveUrl="/gallery"
       />
 
       {/* Datalist for album/event suggestions */}

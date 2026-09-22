@@ -1,0 +1,732 @@
+[
+  {
+    "id": "stu-103",
+    "name": "Ali Akbar Pazhamallur",
+    "batch": "G4",
+    "login_code_hash": "0f1d4ba486922a757c34184c695daf304b7a5a31ec7216aeaca739f098736396",
+    "login_code_enc": "b64052f68805a3bb5d7ba2ae:25d9138cf6159cb1b70da7b54d13b474:e55c12",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-105",
+    "name": "Hafiz Sahl Kuttyadi",
+    "batch": "G4",
+    "login_code_hash": "11b97218a0b5395b2245dfb5f1c6585ae47ca261cb6598c5988b77fe8ef021eb",
+    "login_code_enc": "fcb0160b715ba85280806d2a:500ffc8f02e9d57370c3083f43c40a58:9974f8",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-104",
+    "name": "Jabir Gudallur",
+    "batch": "G4",
+    "login_code_hash": "e6bbd660700496e1a18c777e98e93bfcece8c8c1a0738b96443e3a39c6c16fd3",
+    "login_code_enc": "c047b8bd18d5489f374f973d:95bea3db470d7bfe5a2a1f91234ffc4b:2ac5ff",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-102",
+    "name": "Sahl Padinjatumuri",
+    "batch": "G4",
+    "login_code_hash": "12d09ecf4bf1b12817013ed5bed0ae82513a56ae3494d4ae2a5224f356f5ccb1",
+    "login_code_enc": "a4a4321ffcb46826e5361a25:98d470eb5e3fc90bbea44b0c97e3dffc:748de2",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-101",
+    "name": "Sinan Vellila",
+    "batch": "G4",
+    "login_code_hash": "af2105063d7dfb97428ca2e65427f323d43f4cbcaac5e67bf5f205dadc43fb6e",
+    "login_code_enc": "64dbdec3fbf854f132b7191b:fca5570d0aef9cef8e5c423183d3a01f:0ee7b7",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g5-110-46617268",
+    "name": "Farhan Kooriyad",
+    "batch": "G5",
+    "login_code_hash": "f6c57e8a7cfe46f1a843e81d48429ee3d895cd4b014aa4303afa68f4f60e45e0",
+    "login_code_enc": "11f28e12aacd74d60986e0ad:0a659ae929213089eeabfa81d6626035:594a82",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g5-107-48616669",
+    "name": "Hafiz Basil Chelari",
+    "batch": "G5",
+    "login_code_hash": "e4fba0e4c1a3368248850405157258b65f73cdab272af7a364282b7f4d16342b",
+    "login_code_enc": "6974b1899ebb188b8dcb38c9:1dcae06becd4895d145349669154201c:73f583",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g5-111-48616669",
+    "name": "Hafiz Faris Kolathur",
+    "batch": "G5",
+    "login_code_hash": "09ca04c94bda0f17b6d966b3fe72f7b7ad6145a37b5edbe0576d769199b91328",
+    "login_code_enc": "a2888445a6878e27938d7bf6:68d6ef11860cc50c07a29c06fbd3c0de:98dce6",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-109",
+    "name": "Hafiz Sayyid Shammas Karekkad",
+    "batch": "G5",
+    "login_code_hash": "30498eb8c3eebd8ddd61a0c1c04601679af860aa5b02f76b4ba8f033c5b431ac",
+    "login_code_enc": "4556d71fb75b3f74fa558dc1:74d80bd96d23bfdf6a9ecc0636c2109e:4e8b4c",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-110",
+    "name": "Hafiz Sinan Karekkad",
+    "batch": "G5",
+    "login_code_hash": "eb5b3d7cc3b687ab176105ca0ac533867ed2c9fc0d287321c434d200e89ba8dd",
+    "login_code_enc": "d77fa6df9d36e6d0845d4b92:93274fd6551e0eadc41bbb4595a620c6:5287a7",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-112",
+    "name": "Majid Pacheeri",
+    "batch": "G5",
+    "login_code_hash": "eaced030074beb2bb932a82ecd60e8e7f4430c99db8a3a98a38f256d05782e55",
+    "login_code_enc": "4d234bcdf1de2ef651b87134:0df17ddd2651d4d3d9e927c324d4e6ae:d00405",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g5-112-4d617a69",
+    "name": "Mazin Kodampuzha",
+    "batch": "G5",
+    "login_code_hash": "14810ef97554d10cbf795c46ce2a8387ee13915d81e0743ba4054a717c917af1",
+    "login_code_enc": "05415ce91bb88dcab51ff0f1:c4f44b877fdcb27e19ba40ed197bc61f:5fed48",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g5-109-52697368",
+    "name": "Rishan Velimukku",
+    "batch": "G5",
+    "login_code_hash": "3e6e75e4e1a156d614f6078a549fe5c7887623dbd6cf5fe9eaeb0b9c9896888b",
+    "login_code_enc": "2e3ff1eb1313f146b0fe0e3f:2dff6f1b6d6c323070d4722a1ff6ff97:dd4576",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-111",
+    "name": "Salmanulfaris Arakkuparamb",
+    "batch": "G5",
+    "login_code_hash": "c9adb3e91aa03f98c3e37d052e3af2d6fb0e3d09363ab5c93eff7dc07246bda2",
+    "login_code_enc": "e9ee6614fe64045bfe8ce3c6:cf181fafe0646c7b86680caef9b4433a:8db285",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g5-108-53617979",
+    "name": "Sayyid Sinan Vengara",
+    "batch": "G5",
+    "login_code_hash": "6f8dff68c2db9c6d70b2ddb459ec93de879e0a76cc8a86f7d85bca1a11e81aad",
+    "login_code_enc": "476acd2cab5f626d1da84c9a:65cfc3f3669ff7e9b2c5b8f78ac6d499:58d5c0",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-106",
+    "name": "Shammas Kodumudi",
+    "batch": "G5",
+    "login_code_hash": "0bb4d63359989cb280dedb24dbbc26b9604ba7fd3a8e285c5afee2338df6223f",
+    "login_code_enc": "2ef4fa565ff97cceae61ad80:1867bb9c18f60dcc58f44f461891b8c9:c69285",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-107",
+    "name": "Shibili Pathakara",
+    "batch": "G5",
+    "login_code_hash": "d0fc1a455de1919cd966368794ddd13284ad32f5a47ee09e4fce93bf4ece7eef",
+    "login_code_enc": "3988f1d126b0e90941e0c0e1:1efd9ee86db0542f854ae4da482b20fe:69c66c",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-108",
+    "name": "Sinan Valamboor",
+    "batch": "G5",
+    "login_code_hash": "79650399b2fac886da83a775acb0e2dfa45dea2e4cd2a8a355665e08f92d3293",
+    "login_code_enc": "e830c53f772aeb0d5a20a1ef:34162b3c298fe55d57bafb4c1d948998:8a664d",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g5-113-53696e61",
+    "name": "Sinan Vengara",
+    "batch": "G5",
+    "login_code_hash": "83efff75e971f0cb6b996a9dfcebe86a61f7d0792de9d4f14ad4c135f9c6cf4f",
+    "login_code_enc": "131efd5c0544c3695a961387:ed5a115fe5bd7128f41cda49fdc2e95b:f6f899",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-120",
+    "name": "Adilshan Manjeri",
+    "batch": "G6",
+    "login_code_hash": "79e9a50e9b319a9624a8fca81e21a698500cf8e372b31d47c0cc06ec53c83422",
+    "login_code_enc": "fd5b91e6a73a669b55832c05:091448a20588788427008a04364ed7f3:3ed72d",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g6-114-416d616e",
+    "name": "Aman Kodampuzha",
+    "batch": "G6",
+    "login_code_hash": "bf6ce0702b41a2b07cf6fcb5068cff82b5ad87f9376de6a444cc542d30aee9fa",
+    "login_code_enc": "7c4a3d8f61b9a612d75a47c5:7b256c3c4bf73df60acf4098a609cb8a:268922",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-122",
+    "name": "Arshad Arakkuparamb",
+    "batch": "G6",
+    "login_code_hash": "99f74705b65597e42bc732abbe756e47278e2dce9b6e5f5a90b7bca27526cb54",
+    "login_code_enc": "e8a1300a6f04f208a5e2f592:bc8aed103fa60d2a4cc694dc5565ae81:b5dfe3",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g6-115-42617369",
+    "name": "Basil Kondotty",
+    "batch": "G6",
+    "login_code_hash": "1607f467b39ce233b55eb488b36423d9fab39f2158cae28f66dce4f4a505a70c",
+    "login_code_enc": "4492c0e7e28a6d4287db081d:6fc9bed1e5c7b1fec31f9c1fd2c6f64f:cce982",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g6-120-46617969",
+    "name": "Fayiz Tirur",
+    "batch": "G6",
+    "login_code_hash": "f298dde9afde8d2c5b4960650d0ae66ebd8d48d1d303c99d5f2bb73b0584e050",
+    "login_code_enc": "ac9c7cf43aded625d8913a76:acba046d9ed73cc5902f2fc8a7000e76:0fa300",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g6-117-48616e69",
+    "name": "Hani Valancheri",
+    "batch": "G6",
+    "login_code_hash": "7a905acc135005bac47daff6dd9076deb923345bbbe29fb2ac1f8cd274e8722f",
+    "login_code_enc": "e4ab338e2fbf174dd1c1da97:1f58a9794c5812018945a1272451615c:db3a0e",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-119",
+    "name": "Hashim Husain Koduvalli",
+    "batch": "G6",
+    "login_code_hash": "240b76e43ffef4c89b0a2c0b23f750c4cd0cb4bb60472e193550efe75499bcf3",
+    "login_code_enc": "6b9976e224931b393b201653:e11f8b020a4acd56ba2fe587575295ed:0d1b85",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g6-116-48697368",
+    "name": "Hisham Chelari",
+    "batch": "G6",
+    "login_code_hash": "5fc7fd404b8daafd2d58e091c48733d54d814c5f29a0b87a17d0806b8934bc01",
+    "login_code_enc": "c58791c4a694f1f3b3cc9ec3:eff0f081394e11c309d96d389951e67a:b6a800",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-117",
+    "name": "Manas Alamcode",
+    "batch": "G6",
+    "login_code_hash": "0e6c7079232f81b168874da9d79e0aa226e1778467571745339f26d2f023c09e",
+    "login_code_enc": "ac433c392570aaaf49e3503c:3593d63e108fc06c37501f29f7876090:ae73ef",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-125",
+    "name": "Muhammed Saljas",
+    "batch": "G6",
+    "login_code_hash": "30b01e04991186ae8cc79adaf7fb0db3869dcd8c3587925efab9c131119a8f65",
+    "login_code_enc": "5893cb1699f9bd9d4963e987:dd28ec7480b9f8de38763d029ab4af7e:32a8ea",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-114",
+    "name": "Nasih Koottilangadi",
+    "batch": "G6",
+    "login_code_hash": "5cd9e9301a1175f08cccae177211f07fcf8b635014a88a77c719bdaf9dc21498",
+    "login_code_enc": "2023028c878e186bc93a6f93:8e15eb6308d0a7e28aa614efedd2d483:e5810b",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-115",
+    "name": "Sabith Munyakurushi",
+    "batch": "G6",
+    "login_code_hash": "7b5c67c2823e21fde7d791dbc8ffc321c635577c628553e79fe114c5f913b440",
+    "login_code_enc": "47217aa8f8cad73655751de2:74a453ca1d0840c6171a9f023eb63a88:e9b905",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-113",
+    "name": "Sahl Theyyotchira",
+    "batch": "G6",
+    "login_code_hash": "6b6eb4ef19c33277cea06d621f905270d26d0e1ac57ccf844ad567b951245111",
+    "login_code_enc": "96d9b513fe6b236b30f9d478:352354264b80f1a77b72f38f90854ca1:82a7ae",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g6-118-53617979",
+    "name": "Sayyid Nihal Panakkad",
+    "batch": "G6",
+    "login_code_hash": "345d011f4878ce477a595bfeb73bcfb408a96fd531c827482db1a6d7249668de",
+    "login_code_enc": "9cb433724629bb0b6b44e36f:269bfe24ab36fed56533673540bcd670:547938",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g6-119-53617979",
+    "name": "Sayyid Swalih Panakkad",
+    "batch": "G6",
+    "login_code_hash": "129410db01f3076de50ef1d1cab4b2be00f90e87442a207f04055c2b06555f69",
+    "login_code_enc": "ac72e80ab578393887fcde53:65ee32a5152fc5f6d88cf0fcc302a157:cbbb76",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-116",
+    "name": "Shahul Arakkuparamb",
+    "batch": "G6",
+    "login_code_hash": "00847e363e51a39db20fcf17d9aac4bff8407892be07aee5398e1757f5096fee",
+    "login_code_enc": "187c8c9c568b38daf54fccd1:056f08288ffb9844c43484110f093fa9:8eefe6",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-118",
+    "name": "Shayan Kunnapalli",
+    "batch": "G6",
+    "login_code_hash": "97ff7caf6684f227faca62f516b6732b18febc1dd05e52bf21eb8e52fd061ec2",
+    "login_code_enc": "1f5eb4b265abe4932cc51673:9acd06f47738865a7119defd51468e58:4b8825",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-123",
+    "name": "Siyaf Alippramba",
+    "batch": "G6",
+    "login_code_hash": "c2e6572cbfe9bf1542b443ed66338a2a6e5dff012cbe7f9c8820a0fef2f92b6d",
+    "login_code_enc": "f1e9a044262fd62a4d8f3e4e:a03f2bec914ccb42407215e13cf5234b:7e1688",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-121",
+    "name": "Uvais Thootha",
+    "batch": "G6",
+    "login_code_hash": "90ba693d2daa6d13db3216a38450fcb05fb2be6fba70987b2a8dd7d480d21305",
+    "login_code_enc": "94e434a54ccd73121f6ac9d3:7e149f7599a4250a0d44502d42125162:55a8d2",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-124",
+    "name": "Ziyad Alippramba",
+    "batch": "G6",
+    "login_code_hash": "9e9eb405ab8293e81ba4c155110c9e16f64e120d1d9539b0be5a814b74601623",
+    "login_code_enc": "31d86ac73357de857eeecf36:9afc14ec343edcc9a09bb71abdc8d6ff:5ca042",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-129",
+    "name": "Ajzal Kolathur",
+    "batch": "G7",
+    "login_code_hash": "5b0dd4335cc33a7b75f72a407b10735818ce013ac578a16b2690272e601c8c5c",
+    "login_code_enc": "ee652da34af37e97a0b5f660:441760ebf160ad5f87bc28286e262d0d:a5fb09",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g7-124-48616669",
+    "name": "Hafiz Shaheen Pookkottur",
+    "batch": "G7",
+    "login_code_hash": "91d2011bab265f3266ef0b301d11b4e724eab15226c2b2d783724f9452840c2c",
+    "login_code_enc": "ad198a848b65f4651dea5d7d:300b71192751d9dd77c925627339160f:6e1f9a",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g7-123-48616669",
+    "name": "Hafiz Swalih Kodampuzha",
+    "batch": "G7",
+    "login_code_hash": "fd851d5a5753e11229557b91f31db6e13cb09e41d2ced30382603e1f5f43488c",
+    "login_code_enc": "b805a9bf17239b4c40fb54eb:997eaae380c95e8a62fe5e12b4687871:0ff187",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g7-125-49687361",
+    "name": "Ihsan Vengara",
+    "batch": "G7",
+    "login_code_hash": "68623cc67a1b766d6985bdd14b4841a789e99663d26f4574b8f7c0b13263d041",
+    "login_code_enc": "82667d8859f893d03c45cd88:278b07ff49c6838b747e9a5bab203b3d:e3a6e8",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g7-122-4e616669",
+    "name": "Nafih Peruvallur",
+    "batch": "G7",
+    "login_code_hash": "45987f5f3e1c209050aa7453fec91eaabbf5a0f0ad6ef72499ad10b0dd3bca33",
+    "login_code_enc": "a2aeb5e3b994442bc81d87a6:a698c89e6c90586f5d48d951eb4be51b:b6a7ce",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-126",
+    "name": "Rabeeh Mahe",
+    "batch": "G7",
+    "login_code_hash": "53a5d7758688583c6ef38cea7b5a136e160b53ccf4353b1c6e8e683a662384f8",
+    "login_code_enc": "fe42c5109276402867e8e9ae:6cb0b095a65564ab003b4b152df22b3b:3fcc19",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g7-121-5361686c",
+    "name": "Sahl Vengara",
+    "batch": "G7",
+    "login_code_hash": "a5d1543e35eff8ab3e6b9133036fcf620d8868430293134496d7c23346a52c65",
+    "login_code_enc": "96ef88431d7b655cc4bd4e7e:0bdc46caab792ae3cb8ae18d8952e99e:43e33f",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-127",
+    "name": "Sajil Vettichira",
+    "batch": "G7",
+    "login_code_hash": "b26c4e24301c3e861b315cb0738eb7a272aa419913e7013efee2c774b719ed3a",
+    "login_code_enc": "980acb42ca32dae112c2ae6a:a202e99ff35c9053541b68417b3879d0:f8d575",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-128",
+    "name": "Shameer Kollam",
+    "batch": "G7",
+    "login_code_hash": "e795ce3ce92fda3cee93fc04016c3fd6eaf51e0afb61f1f62770240a132d8d97",
+    "login_code_enc": "75c98a4a8ec9a3ea75e18e32:0f3a88d26e9d8066bd1870a946bc0423:2957f0",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g7-126-5368616d",
+    "name": "Shamil Parappanangadi",
+    "batch": "G7",
+    "login_code_hash": "10f0b572e2275614576d17469cdb48b1d10418af235a497c58f2b7fccf53e2a4",
+    "login_code_enc": "e0fa84c58d037d960700335d:6d40cc646a04b1bdf94020fb54d1d726:0d4427",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-130",
+    "name": "Thayyib Kuttiyadi",
+    "batch": "G7",
+    "login_code_hash": "8f884e8e1b079c364b1e4e7af29535b367cf3faf14b3b3a6f29962314a981a1b",
+    "login_code_enc": "a38f5e388f31949ebf1a3036:2c184a2304d8e0bfd313f3e94fc288fa:c006a0",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-132",
+    "name": "Aboobacker Mahe",
+    "batch": "G8",
+    "login_code_hash": "1814956347a0d33b129e1fdbb4b33bb0d7dd757b13e8499573be8ad92333a89a",
+    "login_code_enc": "a354f81d849161f7909c5ed1:ab26e0e61215b040e895184341ac2c9c:f7e871",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g8-130-4164696c",
+    "name": "Adil Parappanangadi",
+    "batch": "G8",
+    "login_code_hash": "440faa931a88ae5aac05ef7e5675252587e4133e3293b5c96fb2002335a82c9c",
+    "login_code_enc": "682ec672cf8cd9f288bd2886:b7d92e91baa43df97e380ef913afeaec:ef804e",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-135",
+    "name": "Anees Thootha",
+    "batch": "G8",
+    "login_code_hash": "c4042df43b6a727e23b2db93470c5ddfc8b1767e3e758b447018f8ee9c678c7d",
+    "login_code_enc": "953b1bb297af85f855b70371:69a309e182fa25bd41b140c4a67b84af:c6a799",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g8-128-48616669",
+    "name": "Hafiz Shamil Valancheri",
+    "batch": "G8",
+    "login_code_hash": "5e666433a6b81ce5233b1b66bf706e3fdc8ca9670eb8f5ee1fb3fdc6a830a0b5",
+    "login_code_enc": "a0e5c19ae2c8442ea867ca36:65c2281fe16e30b2012ad6ebbada6c4d:8e985a",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g8-127-48616669",
+    "name": "Hafiz Sinan Kondotty",
+    "batch": "G8",
+    "login_code_hash": "bdfdf533edee43268289dfb96b112c82dc3f0c692b4919b74db91e56b8978b07",
+    "login_code_enc": "18d32d0c2fbf12ee4dc54104:63aade079534b331ff3e2a5704203443:4d9c6c",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-134",
+    "name": "Haseeb Arakkuparamb",
+    "batch": "G8",
+    "login_code_hash": "33ea539b13f5557e723557b9d52002dc0f9dbd7c8806920bd3459d2514b1d039",
+    "login_code_enc": "93f21f4eba764c6081f0f931:8c8a8d511763a9ee75586294967b9b92:7b856b",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-136",
+    "name": "Iyas Randathani",
+    "batch": "G8",
+    "login_code_hash": "5662a077ccd2a922a7d65569d9c99aa30d25f7e7b8a64733f45324aac29b57db",
+    "login_code_enc": "e43d06cabbfa5dd0879d2836:4571d054b9cd752215d6d2f113ed792a:146bc0",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-137",
+    "name": "Jemshad Valapuram",
+    "batch": "G8",
+    "login_code_hash": "53ddedc369047ce93477bd3199e8d4c2ab3021fe265a2ed231c0187b4603fbdd",
+    "login_code_enc": "85a256a1962893abf8964ba4:b7ef3d28c994ace0a12098958d618ac9:08d7e3",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-131",
+    "name": "Mubashir Pang",
+    "batch": "G8",
+    "login_code_hash": "16356004cda6f9c0345ac8969eb5da8a10b33965a8b627e123c60f5f5be70a7a",
+    "login_code_enc": "92207d2ea96f6426b5c74d3f:4306f809d8eaa09522071cf9f06d5f49:725ece",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-133",
+    "name": "Naseef Mahe",
+    "batch": "G8",
+    "login_code_hash": "3c45c85aa90eccf33d212db5212301756e3ca0d4c1f00789cd22bf2631807fa3",
+    "login_code_enc": "c263624b6a7f44d88738c3dd:b90392ceb2ca0d998c54b8f1ed9c1bd5:ea738e",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g8-129-5377616c",
+    "name": "Swalih Achanambalam",
+    "batch": "G8",
+    "login_code_hash": "b4844415164e6419cb7c4da4bc131dffd94240e0d71c24f8827195ed02b9b075",
+    "login_code_enc": "9cac453745754829d012ad63:cc01a3cdfd9508b00aebee62768b3d96:7c954c",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g9-133-41646e61",
+    "name": "Adnan Kuttyadi",
+    "batch": "G9",
+    "login_code_hash": "5722449f835f41117a4def2b6b5d85ad74f9bc561ee42006919261dc68aa3293",
+    "login_code_enc": "7d5ef21d0735c541f48bba50:216e90aef915b4855139def2ac93eb5d:f43293",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g9-137-48616669",
+    "name": "Hafiz Mishab Calicut",
+    "batch": "G9",
+    "login_code_hash": "9e9c2114efa2c572b79c074f1cd1167835cd89743e7e44df35f383ca841854c3",
+    "login_code_enc": "683f83dcb7742c8f777d3f90:bd083bd22ddcc6652a542e981e19e32d:d68108",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g9-135-48616669",
+    "name": "Hafiz Nihal Tirur",
+    "batch": "G9",
+    "login_code_hash": "5019e0ac9a44d8ad534482ed6745197a8d65fefcc16a722a41163664a6db9bd9",
+    "login_code_enc": "71615da0dbdce70a84073a30:a9e23f1633a4a407597627de549f4c5e:4509f2",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-139",
+    "name": "Hafiz Pattambi",
+    "batch": "G9",
+    "login_code_hash": "8c5fe2328629852488d550fc40e80310a4eb85e7798252aaa2f0fb5fd7fafb0b",
+    "login_code_enc": "81ca79ebf3fb1d62c46557ad:a594c153ad2f11d0444097fa6485c8f3:e5df06",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g9-136-48616669",
+    "name": "Hafiz Shibil Peruvallur",
+    "batch": "G9",
+    "login_code_hash": "1987122434e76ee5e7071b9b63d2923e20d74afa5b0dff4ed51f4cb4e7a09371",
+    "login_code_enc": "312d31c5d0ad88d5d04480b5:0aa8545008a02109508cf8119594dd03:e0a5f9",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g9-134-52617961",
+    "name": "Rayan Parappanangadi",
+    "batch": "G9",
+    "login_code_hash": "e979f7e55d679d4070fff25d9524e2396d04c250778df95104b9504b72b78ac4",
+    "login_code_enc": "046f3c53558b1a65209b70fc:094e0ca2730d7056252d23d72c836ec1:02fca6",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-g9-132-53617979",
+    "name": "Sayyid Hashim Panakkad",
+    "batch": "G9",
+    "login_code_hash": "64318a6c5c5d7d6b7923c270b951f7d6e8bf1bd32d6fd32ef8199ccc5097aceb",
+    "login_code_enc": "37b766bad3e5435b6fbbd8bf:e51d38389a927548983c22fc0b995f21:897219",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-142",
+    "name": "Sayyid Muhammed Shayan",
+    "batch": "G9",
+    "login_code_hash": "98d1f03b0d0f8ab1e0a3bd91c5614c8b72249ba2952e7934df8974de37976c28",
+    "login_code_enc": "93e7a39c5f54334cc8633119:1cc85271ac919888c109d80eb6851aef:f15a06",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-g9-131-53617979",
+    "name": "Sayyid Sabik Panakkad",
+    "batch": "G9",
+    "login_code_hash": "ecf9e84ad46f00439a7c02410e8d06345fc9d111cbd61464c23bec0ded7639c0",
+    "login_code_enc": "6e864cdc2e138d7e4eed61c8:059efc8875ba6a41e57c7c624aeac4b8:da088e",
+    "active": true,
+    "created_at": "2026-09-18T12:06:08.376Z",
+    "updated_at": "2026-09-18T12:06:08.376Z"
+  },
+  {
+    "id": "stu-140",
+    "name": "Shamweel Thirur",
+    "batch": "G9",
+    "login_code_hash": "9ec37908e6fcfa665c83b11ddc3e403012c2158d90abf398a86e20ad15e3c941",
+    "login_code_enc": "d5706e5ddb81e38abe846158:d532178d5e6cd561dbb61005aa390df9:755172",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-141",
+    "name": "Swalih Kadngapuram",
+    "batch": "G9",
+    "login_code_hash": "46df6008667a30fbf9da98b8f980e31b7cf3f3f32474eb107075c348f929a11a",
+    "login_code_enc": "0e998f521f1cf34d858e85d3:69c9627e68d9ddeec4c71b1e7f27594b:a3a9cc",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  },
+  {
+    "id": "stu-138",
+    "name": "Thahir Kolathur",
+    "batch": "G9",
+    "login_code_hash": "f45f801d14cfb65e5d5d66c2c2d37dab7e20f68039ae20ba27d467ba12f661fa",
+    "login_code_enc": "f608b811235ce3820cc43567:9268537bfeed7039a0318c904035eb9c:4d9056",
+    "active": true,
+    "created_at": "2026-09-18T11:50:59.215Z",
+    "updated_at": "2026-09-18T11:50:59.215Z"
+  }
+]

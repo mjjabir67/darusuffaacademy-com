@@ -143,7 +143,9 @@ export function ImageCropModal({
     >
       <DialogContent
         id="image-crop-modal"
-        className="max-w-lg w-[calc(100vw-2rem)] p-5 sm:p-6 rounded-3xl border border-border bg-card shadow-2xl overflow-hidden max-h-[95vh] flex flex-col"
+        className={`${
+          aspectRatio && aspectRatio > 1.8 ? "max-w-2xl" : "max-w-lg"
+        } w-[calc(100vw-2rem)] p-5 sm:p-6 rounded-3xl border border-border bg-card shadow-2xl overflow-hidden max-h-[95vh] flex flex-col`}
       >
         <DialogHeader className="text-left pb-2">
           <DialogTitle className="font-display text-xl font-bold text-foreground">
@@ -176,12 +178,14 @@ export function ImageCropModal({
           )}
 
           {showPreview && previewUrl && (
-            <div className="flex flex-col items-center justify-center p-4">
+            <div className="flex flex-col items-center justify-center p-4 w-full">
               <div
                 className={`overflow-hidden border-2 border-primary shadow-lg ${
                   cropShape === "round"
                     ? "rounded-full w-44 h-44 sm:w-48 sm:h-48 aspect-square"
-                    : "rounded-2xl max-w-xs max-h-52 object-contain"
+                    : aspectRatio && aspectRatio > 1.8
+                      ? "rounded-xl w-full max-w-lg aspect-[16/6] object-cover"
+                      : "rounded-2xl max-w-xs max-h-52 object-contain"
                 } bg-muted`}
               >
                 <img src={previewUrl} alt="Final preview" className="w-full h-full object-cover" />

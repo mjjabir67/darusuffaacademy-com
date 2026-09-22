@@ -9,11 +9,24 @@ import {
   type Announcement,
   type AdmissionApplication,
 } from "@/lib/cms";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, UserCheck, FileText, Globe } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
   component: Dashboard,
 });
+
+interface SubmissionSummary {
+  id: string;
+  student_id: string;
+  student_name: string;
+  batch: string;
+  title: string;
+  work_type: string;
+  description?: string;
+  status: "Submitted" | "Under Review" | "Approved" | "Rejected";
+  is_published: boolean;
+  created_at: string;
+}
 
 function Dashboard() {
   const { data } = useQuery({
@@ -28,6 +41,7 @@ function Dashboard() {
         staffSettings,
         committeeSettings,
         admissionAppsRes,
+        submissionsRes,
       ] = await Promise.all([
         supabase.from("enquiries").select("*").order("created_at", { ascending: false }),
         supabase.from("posts").select("*").order("created_at", { ascending: false }),
@@ -52,11 +66,23 @@ function Dashboard() {
           } catch {
             // fallback
           }
-          return supabase
-            .from("site_settings")
-            .select("value")
-            .eq("key", "admission_applications")
-            .maybeSingle();
+          return { data: { value: [] } };
+        })(),
+        (async () => {
+          try {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData.session?.access_token;
+            const res = await fetch("/api/admin/submissions", {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) {
+              const json = await res.json();
+              return (json.submissions || []) as SubmissionSummary[];
+            }
+          } catch {
+            // fallback
+          }
+          return [];
         })(),
       ]);
 
@@ -75,9 +101,12 @@ function Dashboard() {
         ? (admissionAppsRes.data?.value as AdmissionApplication[])
         : [];
 
+      const submissions = (submissionsRes || []) as SubmissionSummary[];
+
       return {
         enquiries: validEnquiries,
         admissionApplications,
+        submissions,
         posts: (posts.data ?? []) as Post[],
         announcements: (announcements.data ?? []) as Announcement[],
         galleryCount: gallery.data?.length ?? 0,
@@ -90,10 +119,13 @@ function Dashboard() {
 
   const enquiries = data?.enquiries ?? [];
   const admissionApplications = data?.admissionApplications ?? [];
+  const submissions = data?.submissions ?? [];
   const posts = data?.posts ?? [];
   const announcements = data?.announcements ?? [];
   const unreadEnquiries = enquiries.filter((e) => !e.is_read).length;
   const newApplications = admissionApplications.filter((a) => a.status === "New").length;
+  const pendingSubmissions = submissions.filter((s) => s.status === "Submitted").length;
+  const publishedSubmissions = submissions.filter((s) => s.is_published).length;
 
   return (
     <>
@@ -105,13 +137,87 @@ function Dashboard() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Admission Applications" value={admissionApplications.length} />
         <StatCard label="New Applications" value={newApplications} />
-        <StatCard label="Enquiries" value={enquiries.length} />
+        <StatCard label="Student Works" value={submissions.length} />
+        <StatCard label="Pending Works Review" value={pendingSubmissions} />
         <StatCard label="Unread Enquiries" value={unreadEnquiries} />
         <StatCard label="News & Events" value={posts.length} />
-        <StatCard label="Staff & Faculties" value={data?.staffCount ?? 4} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {/* Student Works & Submissions Panel */}
+        <Panel title="Recent Student Works & Submissions">
+          {submissions.length === 0 ? (
+            <EmptyState>No student works uploaded yet.</EmptyState>
+          ) : (
+            <ul className="space-y-3">
+              {submissions.slice(0, 5).map((sub) => (
+                <li
+                  key={sub.id}
+                  className="flex items-start justify-between gap-4 rounded-xl bg-muted p-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                        {sub.work_type}
+                      </span>
+                      <p className="truncate font-semibold text-foreground font-manjari text-sm">
+                        {sub.title}
+                      </p>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          sub.status === "Approved"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                            : sub.status === "Under Review"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                              : sub.status === "Rejected"
+                                ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                                : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                        }`}
+                      >
+                        {sub.status}
+                      </span>
+                      {sub.is_published && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                          <Globe size={10} /> Published
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      By <strong className="text-foreground font-medium">{sub.student_name}</strong>{" "}
+                      (Batch {sub.batch})
+                    </p>
+                    {sub.description && (
+                      <p className="line-clamp-1 text-xs text-muted-foreground/90 mt-0.5 font-manjari">
+                        {sub.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <span className="whitespace-nowrap text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock size={12} />
+                      {formatDate(sub.created_at)}
+                    </span>
+                    <Link
+                      to="/admin/students"
+                      search={{ tab: "submissions", submissionId: sub.id }}
+                      className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-muted transition"
+                    >
+                      Review
+                    </Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link
+            to="/admin/students"
+            search={{ tab: "submissions" }}
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4"
+          >
+            Manage all student works ({submissions.length}) <ArrowRight size={14} />
+          </Link>
+        </Panel>
+
         {/* Admission Applications Panel */}
         <Panel title="Recent Admission Applications">
           {admissionApplications.length === 0 ? (
@@ -231,21 +337,6 @@ function Dashboard() {
           >
             Manage news & events
           </Link>
-        </Panel>
-
-        <Panel title="Recent announcements">
-          {announcements.length === 0 ? (
-            <EmptyState>No announcements yet.</EmptyState>
-          ) : (
-            <ul className="space-y-3">
-              {announcements.slice(0, 4).map((a) => (
-                <li key={a.id} className="rounded-xl bg-muted p-4">
-                  <p className="font-medium">{a.title}</p>
-                  <p className="text-sm text-muted-foreground">{a.body}</p>
-                </li>
-              ))}
-            </ul>
-          )}
         </Panel>
       </div>
     </>

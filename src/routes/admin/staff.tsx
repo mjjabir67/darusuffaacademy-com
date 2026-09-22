@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import { ImageCropModal } from "@/components/admin/ImageCropModal";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 import {
   uploadMedia,
   deleteStoredMedia,
@@ -540,6 +541,13 @@ function StaffAdmin() {
       <PageHeading
         title="Staff & Committee Members"
         description="Manage teachers, scholars, leadership, and academy committee members with custom photos and names."
+      />
+
+      <PageBannerFieldManager
+        pageKey="staff"
+        pageTitle="Staff & Committee"
+        pageDescription="Top hero banner image displayed across the header of the public Staff & Committee page behind the title."
+        liveUrl="/staff"
       />
 
       <Tabs

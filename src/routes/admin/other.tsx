@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 import { ImageCropModal } from "@/components/admin/ImageCropModal";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import {
   uploadMedia,
@@ -62,12 +63,13 @@ import {
   type SsfDawaEvent,
   type SsfDawaMediaItem,
 } from "@/lib/cms";
+import { Info } from "lucide-react";
 
 export const Route = createFileRoute("/admin/other")({
   component: AdminOtherPage,
 });
 
-type TabType = "overview" | "art-literature" | "language-door" | "magazine" | "ssf-dawa";
+type TabType = "overview" | "about" | "art-literature" | "language-door" | "magazine" | "ssf-dawa";
 
 function AdminOtherPage() {
   const queryClient = useQueryClient();
@@ -80,6 +82,7 @@ function AdminOtherPage() {
       const tabParam = params.get("tab") as TabType;
       if (
         tabParam === "overview" ||
+        tabParam === "about" ||
         tabParam === "art-literature" ||
         tabParam === "language-door" ||
         tabParam === "magazine" ||
@@ -610,6 +613,10 @@ function AdminOtherPage() {
             <Calendar size={16} />
             <span>SSF Da'wa</span>
           </TabsTrigger>
+          <TabsTrigger value="about" className="gap-2 px-4 text-xs sm:text-sm">
+            <Info size={16} />
+            <span>About Page</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* ================================================================= */}
@@ -792,13 +799,93 @@ function AdminOtherPage() {
                 </Link>
               </div>
             </Panel>
+
+            {/* Card 5: About Page Banner */}
+            <Panel className="flex flex-col justify-between p-6">
+              <div>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Info size={24} />
+                </div>
+                <h3 className="font-display text-xl text-foreground">About Page</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Customize the top hero banner image for the About page, campus photographs, and
+                  historical founding visuals.
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="rounded-md bg-primary/10 px-2 py-1 font-medium text-primary">
+                    Banner Configurable
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={() => handleTabChange("about")}
+                  className="gap-2 rounded-xl"
+                >
+                  <span>Manage Banner</span>
+                  <ArrowRight size={14} />
+                </Button>
+                <Link
+                  to="/about"
+                  target="_blank"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <span>View Public Page</span>
+                  <ExternalLink size={13} />
+                </Link>
+              </div>
+            </Panel>
           </div>
+        </TabsContent>
+
+        {/* ================================================================= */}
+        {/* ABOUT TAB */}
+        {/* ================================================================= */}
+        <TabsContent value="about" className="space-y-6">
+          <PageBannerFieldManager
+            pageKey="about"
+            pageTitle="About"
+            pageDescription="Top hero banner image displayed across the header of the public About page behind the title."
+            liveUrl="/about"
+          />
+
+          <Panel className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-display text-base font-semibold text-foreground">
+                  About Page Campus &amp; History Photographs
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-lg">
+                  Campus facility photographs, history milestones, and institutional vision images
+                  can also be managed in Settings.
+                </p>
+              </div>
+              <Link
+                to="/admin/settings"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors shrink-0"
+              >
+                <span>Open Settings &rarr;</span>
+              </Link>
+            </div>
+          </Panel>
         </TabsContent>
 
         {/* ================================================================= */}
         {/* ART AND LITERATURE TAB */}
         {/* ================================================================= */}
         <TabsContent value="art-literature" className="space-y-6">
+          {/* Banner Image */}
+          <PageBannerFieldManager
+            pageKey="art-literature"
+            pageTitle="Art & Literature"
+            pageDescription="Top hero banner image displayed across the header of the public Art & Literature page behind the title."
+            liveUrl="/art-literature"
+          />
+
           <Panel className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
               <div>
@@ -1106,6 +1193,14 @@ function AdminOtherPage() {
         {/* LANGUAGE DOOR TAB */}
         {/* ================================================================= */}
         <TabsContent value="language-door" className="space-y-6">
+          {/* Banner Image */}
+          <PageBannerFieldManager
+            pageKey="language-door"
+            pageTitle="Language Door"
+            pageDescription="Top hero banner image displayed across the header of the public Language Door page behind the title."
+            liveUrl="/language-door"
+          />
+
           <Panel className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
               <div>
@@ -1414,6 +1509,14 @@ function AdminOtherPage() {
         {/* MAGAZINE TAB */}
         {/* ================================================================= */}
         <TabsContent value="magazine" className="space-y-6">
+          {/* Banner Image */}
+          <PageBannerFieldManager
+            pageKey="magazine"
+            pageTitle="Magazine"
+            pageDescription="Top hero banner image displayed across the header of the public Magazine page behind the title."
+            liveUrl="/magazine"
+          />
+
           <Panel className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
               <div>
@@ -1915,6 +2018,14 @@ function AdminOtherPage() {
         {/* SSF DA'WA TAB */}
         {/* ================================================================= */}
         <TabsContent value="ssf-dawa" className="space-y-6">
+          {/* Banner Image */}
+          <PageBannerFieldManager
+            pageKey="ssf-dawa"
+            pageTitle="SSF Da'wa"
+            pageDescription="Top hero banner image displayed across the header of the public SSF Da'wa page behind the title."
+            liveUrl="/ssf-dawa"
+          />
+
           {/* Da'wa Page Settings (Intro, descriptions, banner quote) */}
           <Panel className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">

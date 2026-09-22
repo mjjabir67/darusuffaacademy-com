@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Settings, Images } from "lucide-react";
+import { Settings, Images, GraduationCap, ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import {
@@ -184,6 +184,49 @@ function Home() {
           </div>
         </section>
       </main>
+
+      {/* Student Portal Option - Placed immediately above footer */}
+      <section
+        id="student-portal-banner"
+        aria-label="Student Portal"
+        className="border-t border-border/40 bg-gradient-to-b from-background via-secondary/20 to-background py-10 sm:py-14"
+      >
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-ink p-6 text-white shadow-2xl sm:p-8 md:p-10">
+            {/* Ambient aesthetic glow */}
+            <div className="pointer-events-none absolute -right-12 -top-12 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+
+            <div className="relative z-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+              <div className="max-w-xl space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                  <GraduationCap size={14} />
+                  <span>Darusuffa Students</span>
+                </div>
+                <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                  Student Portal
+                </h2>
+                <p className="text-sm text-white/70 sm:text-base">
+                  Login to submit and manage your works. Share your speeches, poems, articles,
+                  essays, and drawings with the academy.
+                </p>
+              </div>
+
+              <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                <Link
+                  to="/student-login"
+                  id="home-student-portal-login-btn"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl active:translate-y-0"
+                >
+                  <GraduationCap size={18} />
+                  <span>Student Login</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <SiteFooter />
 

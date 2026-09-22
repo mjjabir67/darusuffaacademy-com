@@ -18,6 +18,7 @@ import {
   type AboutSettings,
 } from "@/lib/cms";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 import campus from "@/assets/campus.jpg";
 import heroBooks from "@/assets/hero-books.jpg";
 
@@ -411,56 +412,65 @@ function SettingsAdmin() {
         </Panel>
 
         <Panel title="Contact details">
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                rows={2}
-                value={contact.address}
-                onChange={(e) => setContact({ ...contact, address: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phones">Phone numbers (comma separated)</Label>
-              <Input
-                id="phones"
-                value={contact.phones.join(", ")}
-                onChange={(e) =>
-                  setContact({
-                    ...contact,
-                    phones: e.target.value
-                      .split(",")
-                      .map((p) => p.trim())
-                      .filter(Boolean),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp">WhatsApp number</Label>
-              <Input
-                id="whatsapp"
-                value={contact.whatsapp}
-                onChange={(e) => setContact({ ...contact, whatsapp: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={contact.email}
-                onChange={(e) => setContact({ ...contact, email: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="mapQuery">Map location search</Label>
-              <Input
-                id="mapQuery"
-                value={contact.mapQuery}
-                onChange={(e) => setContact({ ...contact, mapQuery: e.target.value })}
-              />
+          <div className="space-y-6">
+            <PageBannerFieldManager
+              pageKey="contact"
+              pageTitle="Contact Us"
+              pageDescription="Top hero banner image displayed across the header of the public Contact Us page behind the title."
+              liveUrl="/contact"
+            />
+
+            <div className="grid gap-5 md:grid-cols-2 pt-4 border-t border-border">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="address">Address</Label>
+                <Textarea
+                  id="address"
+                  rows={2}
+                  value={contact.address}
+                  onChange={(e) => setContact({ ...contact, address: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phones">Phone numbers (comma separated)</Label>
+                <Input
+                  id="phones"
+                  value={contact.phones.join(", ")}
+                  onChange={(e) =>
+                    setContact({
+                      ...contact,
+                      phones: e.target.value
+                        .split(",")
+                        .map((p) => p.trim())
+                        .filter(Boolean),
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">WhatsApp number</Label>
+                <Input
+                  id="whatsapp"
+                  value={contact.whatsapp}
+                  onChange={(e) => setContact({ ...contact, whatsapp: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={contact.email}
+                  onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mapQuery">Map location search</Label>
+                <Input
+                  id="mapQuery"
+                  value={contact.mapQuery}
+                  onChange={(e) => setContact({ ...contact, mapQuery: e.target.value })}
+                />
+              </div>
             </div>
           </div>
         </Panel>
@@ -532,26 +542,35 @@ function SettingsAdmin() {
           </div>
         </Panel>
 
-        <Panel title="About Page Images">
+        <Panel title="About Page Banners & Images">
           <div className="space-y-6">
-            <ImageFieldManager
-              label="Campus Building Image"
-              description="Photo displayed in the About Us section showing the academy campus."
-              currentImageUrl={about.campusImage}
-              defaultImageUrl={campus}
-              storageFolder="about"
-              cropShape="rect"
-              aspectRatio={4 / 3}
-              modalTitle="Crop & Adjust Campus Image"
-              onSave={async (url) => {
-                const updated = { ...about, campusImage: url };
-                setAbout(updated);
-                await supabase
-                  .from("site_settings")
-                  .upsert({ key: "about", value: updated }, { onConflict: "key" });
-                queryClient.invalidateQueries({ queryKey: ["settings", "about"] });
-              }}
+            <PageBannerFieldManager
+              pageKey="about"
+              pageTitle="About"
+              pageDescription="Top hero banner image displayed across the header of the public About page behind the title."
+              liveUrl="/about"
             />
+
+            <div className="pt-4 border-t border-border">
+              <ImageFieldManager
+                label="Campus Building Image"
+                description="Photo displayed in the About Us section showing the academy campus."
+                currentImageUrl={about.campusImage}
+                defaultImageUrl={campus}
+                storageFolder="about"
+                cropShape="rect"
+                aspectRatio={4 / 3}
+                modalTitle="Crop & Adjust Campus Image"
+                onSave={async (url) => {
+                  const updated = { ...about, campusImage: url };
+                  setAbout(updated);
+                  await supabase
+                    .from("site_settings")
+                    .upsert({ key: "about", value: updated }, { onConflict: "key" });
+                  queryClient.invalidateQueries({ queryKey: ["settings", "about"] });
+                }}
+              />
+            </div>
 
             <div className="pt-2 border-t border-border">
               <ImageFieldManager

@@ -4,20 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -50,9 +36,11 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-sand: var(--sand);
   --color-gold: var(--gold);
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
-  --font-enquiry: "Lexend Deca", ui-sans-serif, system-ui, sans-serif;
+  --font-manjari: "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", sans-serif;
+  --font-malayalam: "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", sans-serif;
+  --font-display: "Outfit", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
+  --font-enquiry: "Lexend Deca", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -114,13 +102,38 @@
     font-family: var(--font-sans);
   }
 
+  input,
+  textarea,
+  select,
+  button {
+    font-family: var(--font-sans);
+  }
+
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     letter-spacing: -0.015em;
   }
+
+  /* Any Malayalam text block automatically renders in Manjari */
+  :lang(ml),
+  [lang="ml"],
+  .font-malayalam,
+  .font-manjari {
+    font-family: var(--font-manjari);
+  }
+}
+
+@utility font-manjari {
+  font-family: var(--font-manjari);
+}
+
+@utility font-malayalam {
+  font-family: var(--font-malayalam);
 }
 
 @utility surface-ink {

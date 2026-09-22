@@ -122,15 +122,64 @@ function rowToApplication(row: Record<string, unknown>): StoredAdmissionApplicat
   };
 }
 
+function isSpamOrInvalid(app: StoredAdmissionApplication): boolean {
+  const name = (app.student_name || "").toLowerCase().trim();
+  const phone = (app.phone_number || app.phone || "").replace(/\D/g, "");
+  const address = (app.address || "").toLowerCase().trim();
+
+  // Flag dummy test phones like 00000000000
+  if (/^0+$/.test(phone) || phone.length < 5) return true;
+  // Flag gibberish dummy test addresses
+  if (address === "wrlbweurylvweuy" || address === "test" || address === "asdf") return true;
+  if (!name || name === "test") return true;
+
+  return false;
+}
+
+function deduplicateApplications(apps: StoredAdmissionApplication[]): StoredAdmissionApplication[] {
+  const seen = new Set<string>();
+  const cleanList: StoredAdmissionApplication[] = [];
+
+  for (const app of apps) {
+    if (isSpamOrInvalid(app)) continue;
+
+    // Deduplicate by student name + class or phone
+    const cleanPhone = (app.phone_number || app.phone || "").replace(/\D/g, "");
+    const key = `${app.student_name.toLowerCase().trim()}_${app.father_name.toLowerCase().trim()}_${cleanPhone}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      cleanList.push(app);
+    }
+  }
+
+  return cleanList;
+}
+
 export function getAllApplications(): StoredAdmissionApplication[] {
   try {
     const db = getDb();
     const rows = db.prepare("SELECT * FROM admission_applications ORDER BY created_at DESC").all();
     if (rows && rows.length > 0) {
-      const apps = rows.map(rowToApplication);
-      // Ensure JSON backup stays in sync
-      syncToJsonFile(apps);
-      return apps;
+      const allApps = rows.map(rowToApplication);
+      const cleanApps = deduplicateApplications(allApps);
+
+      // If dirty entries were filtered, clean SQLite database table
+      if (cleanApps.length !== allApps.length) {
+        try {
+          const keepIds = new Set(cleanApps.map((a) => a.id));
+          const toDelete = allApps.filter((a) => !keepIds.has(a.id));
+          const delStmt = db.prepare("DELETE FROM admission_applications WHERE id = ?");
+          for (const d of toDelete) {
+            delStmt.run(d.id);
+          }
+        } catch (cleanErr) {
+          console.warn("[Admission DB] SQLite purge error:", cleanErr);
+        }
+      }
+
+      syncToJsonFile(cleanApps);
+      return cleanApps;
     }
   } catch (err) {
     console.error("[Admission DB] Query error from SQLite:", err);
@@ -138,17 +187,19 @@ export function getAllApplications(): StoredAdmissionApplication[] {
 
   // Fallback to JSON file if SQLite had no rows or had an issue
   const fromJson = restoreFromJsonFile();
-  if (fromJson.length > 0) {
+  const cleanJson = deduplicateApplications(fromJson);
+  if (cleanJson.length > 0) {
     try {
       const db = getDb();
-      for (const item of fromJson) {
+      for (const item of cleanJson) {
         insertRowIntoDb(db, item);
       }
     } catch (importErr) {
       console.warn("[Admission DB] Failed to re-insert JSON backup into SQLite:", importErr);
     }
   }
-  return fromJson;
+  syncToJsonFile(cleanJson);
+  return cleanJson;
 }
 
 function insertRowIntoDb(db: DatabaseSync, app: StoredAdmissionApplication) {

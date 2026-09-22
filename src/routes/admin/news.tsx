@@ -14,6 +14,7 @@ import { slugify, uploadMedia, deleteStoredMedia, formatDate, type Post } from "
 import { EventMediaManager } from "@/components/admin/EventMediaManager";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
+import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 
 export const Route = createFileRoute("/admin/news")({
   component: NewsAdmin,
@@ -184,6 +185,13 @@ function NewsAdmin() {
             Add new
           </Button>
         }
+      />
+
+      <PageBannerFieldManager
+        pageKey="events"
+        pageTitle="Events & News"
+        pageDescription="Top hero banner image displayed across the header of the public Events & News page behind the title."
+        liveUrl="/events"
       />
 
       {draft && (

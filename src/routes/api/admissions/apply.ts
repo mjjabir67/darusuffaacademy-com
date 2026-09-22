@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createApplication } from "@/server/db/admission-applications";
+import { createApplication, getAllApplications } from "@/server/db/admission-applications";
 
 export const Route = createFileRoute("/api/admissions/apply")({
   server: {
@@ -71,22 +71,16 @@ export const Route = createFileRoute("/api/admissions/apply")({
           // Optional sync with site_settings in Supabase if accessible
           try {
             const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-            const { data: existingData } = await supabaseAdmin
-              .from("site_settings")
-              .select("value")
-              .eq("key", "admission_applications")
-              .maybeSingle();
-
-            const existingList = Array.isArray(existingData?.value) ? existingData.value : [];
+            const cleanList = getAllApplications();
             await supabaseAdmin.from("site_settings").upsert(
               {
                 key: "admission_applications",
-                value: [newApplication, ...existingList],
+                value: cleanList,
               },
               { onConflict: "key" },
             );
           } catch (syncErr) {
-            // Non-blocking: primary persistence is already secure in dedicated database
+            // Non-blocking
             console.warn("[API apply] Supabase site_settings sync note:", syncErr);
           }
 

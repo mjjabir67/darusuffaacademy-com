@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/site/PageShell";
 import { useAcademicSettings } from "@/lib/cms";
+import { StudentWorksSection } from "@/components/academic/StudentWorksSection";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/academic")({
@@ -90,6 +91,8 @@ function Academic() {
           className="h-full rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full"
         />
       </section>
+
+      <StudentWorksSection />
 
       <section className="surface-ink px-5 py-20">
         <div className="mx-auto max-w-6xl">

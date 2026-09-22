@@ -81,14 +81,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Darusuffa Academy" },
       {
         name: "description",
-        content: "Darusuffa Academy — Muhyissunna Integrated Dars, Vadeesunnah, Kolathur.",
+        content: "Integrated Islamic and modern education academy at Vadeesunnah, Kolathur, Kerala",
       },
       { name: "author", content: "Darusuffa Academy" },
       { property: "og:title", content: "Darusuffa Academy" },
       {
         property: "og:description",
-        content:
-          "Islamic integrated education at Vadeesunnah, Kolathur. Educate. Elevate. Empower.",
+        content: "Integrated Islamic and modern education academy at Vadeesunnah, Kolathur, Kerala",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -102,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Figtree:wght@400;500;600&family=Lexend+Deca:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Figtree:wght@400;500;600&family=Lexend+Deca:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Manjari:wght@400;700&family=Gayathri:wght@400;700&family=Anek+Malayalam:wght@400;500;600;700&display=swap",
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
