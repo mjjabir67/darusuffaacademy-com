@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAdmissionApplications } from "@/lib/admissions";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -96,21 +97,11 @@ function AdminLayout() {
     queryKey: ["admin", "new-applications-count"],
     queryFn: async () => {
       try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        const res = await fetch("/api/admissions/applications", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.applications)) {
-            return json.applications.filter((a: { status?: string }) => a.status === "New").length;
-          }
-        }
+        const apps = await fetchAdmissionApplications();
+        return apps.filter((a) => a.status === "New").length;
       } catch {
-        // fallback
+        return 0;
       }
-      return 0;
     },
     refetchInterval: 10000,
   });

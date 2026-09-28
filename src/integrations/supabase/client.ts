@@ -48,16 +48,19 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering), and built-in project credentials
+  const metaEnv = typeof import.meta !== "undefined" ? import.meta.env : undefined;
+  const procEnv = typeof process !== "undefined" ? process.env : undefined;
+
   const SUPABASE_URL =
-    import.meta.env["VITE_SUPABASE_URL"] ||
-    process.env["SUPABASE_URL"] ||
+    metaEnv?.["VITE_SUPABASE_URL"] ||
+    procEnv?.["SUPABASE_URL"] ||
     "https://jqowyloiqhtgskuybhnc.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
-    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    metaEnv?.["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    procEnv?.["SUPABASE_PUBLISHABLE_KEY"] ||
     "sb_publishable_U1p5kU5_UID5TH4MijABGQ_lwjjFq-y";
 
-  if (!import.meta.env["VITE_SUPABASE_URL"] && !process.env["SUPABASE_URL"]) {
+  if (!metaEnv?.["VITE_SUPABASE_URL"] && !procEnv?.["SUPABASE_URL"]) {
     console.warn(
       "[Supabase] Missing SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY. Running with mock/fallback client.",
     );

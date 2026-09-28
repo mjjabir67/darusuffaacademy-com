@@ -41,6 +41,7 @@ import { AdmissionFormFieldsTab } from "@/components/admin/admission/AdmissionFo
 import { AdmissionDownloadFormTab } from "@/components/admin/admission/AdmissionDownloadFormTab";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
+import { fetchAdmissionApplications } from "@/lib/admissions";
 import { Image as ImageIcon } from "lucide-react";
 import students from "@/assets/students.jpg";
 
@@ -61,20 +62,7 @@ export default function AdmissionAdmin() {
   const { data: applications = [] } = useQuery<AdmissionApplication[]>({
     queryKey: ["admin", "admission-applications"],
     queryFn: async () => {
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        const res = await fetch("/api/admissions/applications", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.applications)) return json.applications;
-        }
-      } catch {
-        // fallback
-      }
-      return [];
+      return await fetchAdmissionApplications();
     },
     refetchInterval: 5000,
   });

@@ -35,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { generateAdmissionPdf } from "@/lib/admissionPdf";
+import { submitAdmissionApplication } from "@/lib/admissions";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admission")({
@@ -241,53 +242,16 @@ function Admission() {
     setAppSubmitting(true);
 
     try {
-      // Split base vs custom fields
-      const {
-        class_to_join,
-        student_name,
-        father_name,
-        address,
-        place,
-        district,
-        phone,
-        whatsapp,
-        ...customRest
-      } = appValues;
+      const result = await submitAdmissionApplication(appValues, ADMISSION.admissionYear);
 
-      // 1. Submit to API endpoint
-      const res = await fetch("/api/admissions/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          student_name: student_name.trim(),
-          father_name: father_name.trim(),
-          class_to_join: class_to_join.trim(),
-          phone: phone.trim(),
-          phone_number: phone.trim(),
-          whatsapp: whatsapp.trim(),
-          whatsapp_number: whatsapp.trim(),
-          address: address.trim(),
-          place: place.trim(),
-          district: district.trim(),
-          custom_fields: customRest,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => null);
-        throw new Error(
-          errorData?.message || "Failed to submit application. Please check details and try again.",
-        );
-      }
-
-      const resData = await res.json();
-      if (!resData.success) {
-        throw new Error(resData.message || "Failed to submit application.");
+      if (!result.success) {
+        throw new Error(result.message || "Failed to submit application.");
       }
 
       setAppSubmitted(true);
       toast.success(
-        "Application submitted successfully. Your application has been received by Darusuffa Academy.",
+        result.message ||
+          "Application submitted successfully. Your application has been received by Darusuffa Academy.",
       );
     } catch (err: unknown) {
       console.error("Submission failed:", err);

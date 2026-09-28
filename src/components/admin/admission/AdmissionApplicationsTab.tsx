@@ -41,6 +41,11 @@ import {
 } from "@/components/ui/select";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import type { AdmissionApplication, AdmissionApplicationStatus } from "@/lib/cms";
+import {
+  fetchAdmissionApplications,
+  updateAdmissionApplicationStatus,
+  deleteAdmissionApplication,
+} from "@/lib/admissions";
 
 const STATUS_CONFIG: Record<
   AdmissionApplicationStatus,
@@ -80,7 +85,7 @@ export function AdmissionApplicationsTab() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
-  // Fetch real-time applications from server API
+  // Fetch real-time applications from unified source (API + Supabase)
   const {
     data: applications = [],
     isLoading,
@@ -88,23 +93,7 @@ export function AdmissionApplicationsTab() {
   } = useQuery<AdmissionApplication[]>({
     queryKey: ["admin", "admission-applications"],
     queryFn: async () => {
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-
-        const res = await fetch("/api/admissions/applications", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.applications)) {
-            return json.applications;
-          }
-        }
-      } catch (err) {
-        console.warn("Failed to fetch applications:", err);
-      }
-      return [];
+      return await fetchAdmissionApplications();
     },
     refetchInterval: 5000,
   });
@@ -112,34 +101,7 @@ export function AdmissionApplicationsTab() {
   const handleStatusChange = async (appId: string, newStatus: AdmissionApplicationStatus) => {
     setUpdatingStatus(appId);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-
-      // 1. Try API PATCH
-      try {
-        await fetch("/api/admissions/applications", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ id: appId, status: newStatus }),
-        });
-      } catch (patchErr) {
-        console.warn("API status patch error:", patchErr);
-      }
-
-      // 2. Also ensure direct Supabase site_settings updated
-      try {
-        const nextList = applications.map((a) =>
-          a.id === appId ? { ...a, status: newStatus } : a,
-        );
-        await supabase
-          .from("site_settings")
-          .upsert({ key: "admission_applications", value: nextList }, { onConflict: "key" });
-      } catch {
-        // non-blocking
-      }
+      await updateAdmissionApplicationStatus(appId, newStatus, applications);
 
       if (selectedApp && selectedApp.id === appId) {
         setSelectedApp({ ...selectedApp, status: newStatus });
@@ -160,30 +122,7 @@ export function AdmissionApplicationsTab() {
   const handleDeleteApplication = async () => {
     if (!deleteTargetId) return;
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-
-      try {
-        await fetch("/api/admissions/applications", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ id: deleteTargetId }),
-        });
-      } catch (delErr) {
-        console.warn("API delete error:", delErr);
-      }
-
-      try {
-        const nextList = applications.filter((a) => a.id !== deleteTargetId);
-        await supabase
-          .from("site_settings")
-          .upsert({ key: "admission_applications", value: nextList }, { onConflict: "key" });
-      } catch {
-        // non-blocking
-      }
+      await deleteAdmissionApplication(deleteTargetId, applications);
 
       if (selectedApp?.id === deleteTargetId) {
         setSelectedApp(null);

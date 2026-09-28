@@ -9,6 +9,7 @@ import {
   type Announcement,
   type AdmissionApplication,
 } from "@/lib/cms";
+import { fetchAdmissionApplications } from "@/lib/admissions";
 import { ArrowRight, Clock, UserCheck, FileText, Globe } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -52,21 +53,11 @@ function Dashboard() {
         supabase.from("site_settings").select("value").eq("key", "committee_members").maybeSingle(),
         (async () => {
           try {
-            const { data: sessionData } = await supabase.auth.getSession();
-            const token = sessionData.session?.access_token;
-            const res = await fetch("/api/admissions/applications", {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            if (res.ok) {
-              const json = await res.json();
-              if (Array.isArray(json.applications)) {
-                return { data: { value: json.applications } };
-              }
-            }
+            const apps = await fetchAdmissionApplications();
+            return { data: { value: apps } };
           } catch {
-            // fallback
+            return { data: { value: [] } };
           }
-          return { data: { value: [] } };
         })(),
         (async () => {
           try {

@@ -28,7 +28,11 @@ function Enquiries() {
       if (error) throw error;
 
       const allRows = (data ?? []) as Enquiry[];
-      return allRows.filter((e) => !e.message?.includes("[ADMISSION APPLICATION]"));
+      return allRows.filter(
+        (e) =>
+          !e.message?.includes("[ADMISSION APPLICATION]") &&
+          !e.course?.toLowerCase().startsWith("admission:"),
+      );
     },
   });
 
