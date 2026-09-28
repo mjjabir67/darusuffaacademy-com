@@ -46,9 +46,11 @@ import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 import { ImageCropModal } from "@/components/admin/ImageCropModal";
 import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
+import { AmazioSettingsPanel } from "@/components/admin/AmazioSettingsPanel";
 import {
   uploadMedia,
   deleteStoredMedia,
+  DEFAULT_AMAZIO,
   DEFAULT_ART_LITERATURE,
   DEFAULT_LANGUAGE_DOOR,
   DEFAULT_MAGAZINES,
@@ -128,6 +130,10 @@ function AdminOtherPage() {
         ...DEFAULT_ART_LITERATURE,
         ...parsed,
         cards: Array.isArray(parsed?.cards) ? parsed.cards : DEFAULT_ART_LITERATURE.cards,
+        amazio: {
+          ...DEFAULT_AMAZIO,
+          ...(parsed?.amazio ?? {}),
+        },
       };
     },
   });
@@ -884,6 +890,14 @@ function AdminOtherPage() {
             pageTitle="Art & Literature"
             pageDescription="Top hero banner image displayed across the header of the public Art & Literature page behind the title."
             liveUrl="/art-literature"
+          />
+
+          {/* Amazio Arts Fest Website & Link Configuration */}
+          <AmazioSettingsPanel
+            artState={artState}
+            setArtState={setArtState}
+            onSave={handleSaveArtSettings}
+            isSaving={isSavingArt}
           />
 
           <Panel className="p-6">

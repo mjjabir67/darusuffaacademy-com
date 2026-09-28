@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/site/PageShell";
 import { useArtLiteratureSettings } from "@/lib/cms";
-import { Sparkles, Palette } from "lucide-react";
+import { Sparkles, Palette, ExternalLink } from "lucide-react";
+import { formatExternalUrl } from "@/components/site/AmazioHomeSection";
 
 export const Route = createFileRoute("/art-literature")({
   head: () => ({
@@ -88,17 +89,33 @@ function ArtLiterature() {
       <section className="surface-ink px-5 py-16">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-5">
           <div>
-            <p className="font-display text-2xl text-ink-foreground">See moments from Amazio 24</p>
+            <p className="font-display text-2xl text-ink-foreground">
+              {content.amazio?.title || "Amazio Arts Fest"}
+            </p>
             <p className="mt-1 text-sm text-ink-foreground/70">
-              Explore our campus visual gallery and festival highlights
+              {content.amazio?.description ||
+                "Explore our annual celebration of arts, literature, knowledge and creativity."}
             </p>
           </div>
-          <Link
-            to="/media"
-            className="rounded-full bg-secondary px-6 py-3 font-display text-sm text-secondary-foreground transition-opacity hover:opacity-90"
-          >
-            Open the gallery
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            {content.amazio?.url && (
+              <a
+                href={formatExternalUrl(content.amazio.url)}
+                target={content.amazio.openInNewTab !== false ? "_blank" : "_self"}
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-md transition-opacity hover:opacity-90"
+              >
+                <span>{content.amazio.buttonText || "Visit Amazio"}</span>
+                <ExternalLink size={14} />
+              </a>
+            )}
+            <Link
+              to="/media"
+              className="rounded-full bg-secondary px-6 py-3 font-display text-sm text-secondary-foreground transition-opacity hover:opacity-90"
+            >
+              Open the gallery
+            </Link>
+          </div>
         </div>
       </section>
     </PageShell>

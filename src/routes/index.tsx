@@ -13,6 +13,7 @@ import {
   type Post,
 } from "@/lib/cms";
 import { MediaViewerModal } from "@/components/site/MediaViewerModal";
+import { AmazioHomeSection } from "@/components/site/AmazioHomeSection";
 import heroBooks from "@/assets/hero-books.jpg";
 import quranDark from "@/assets/quran-dark.jpg";
 import studentsHallAsset from "@/assets/darusuffa-students-hall.jpg.asset.json";
@@ -184,6 +185,9 @@ function Home() {
           </div>
         </section>
       </main>
+
+      {/* Amazio Arts & Knowledge Fest Section (configured dynamically via Admin Portal -> Other -> Art & Literature) */}
+      <AmazioHomeSection />
 
       {/* Student Portal Option - Placed immediately above footer */}
       <section

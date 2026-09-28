@@ -1121,6 +1121,28 @@ export async function deleteStoredMedia(mediaUrl?: string | null): Promise<boole
 // OTHER SECTION: ART & LITERATURE
 // ==========================================
 
+export type AmazioSettings = {
+  enabled: boolean;
+  eyebrow?: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  url: string;
+  imageUrl?: string | null;
+  openInNewTab?: boolean;
+};
+
+export const DEFAULT_AMAZIO: AmazioSettings = {
+  enabled: true,
+  eyebrow: "AMAZIO ARTS & KNOWLEDGE FEST",
+  title: "Amazio Arts & Knowledge Fest",
+  description: "Explore our annual celebration of arts, literature, knowledge and creativity.",
+  buttonText: "Visit Amazio",
+  url: "https://amazio.darusuffa.org",
+  imageUrl: null,
+  openInNewTab: true,
+};
+
 export type ArtLiteratureCard = {
   id: string;
   title: string;
@@ -1134,6 +1156,7 @@ export type ArtLiteratureSettings = {
   bodyContent?: string;
   imageUrl?: string | null;
   cards: ArtLiteratureCard[];
+  amazio?: AmazioSettings;
 };
 
 export const DEFAULT_ART_LITERATURE: ArtLiteratureSettings = {
@@ -1144,6 +1167,7 @@ export const DEFAULT_ART_LITERATURE: ArtLiteratureSettings = {
   bodyContent:
     "Art and literature at Darusuffa Academy — Amazio arts fest, campus magazines, calligraphy, oratory and creative writing.",
   imageUrl: null,
+  amazio: DEFAULT_AMAZIO,
   cards: [
     {
       id: "strand-1",
@@ -1180,10 +1204,22 @@ export function useArtLiteratureSettings(): ArtLiteratureSettings {
         ...DEFAULT_ART_LITERATURE,
         ...raw,
         cards: Array.isArray(raw?.cards) ? raw.cards : DEFAULT_ART_LITERATURE.cards,
+        amazio: {
+          ...DEFAULT_AMAZIO,
+          ...(raw?.amazio ?? {}),
+        },
       };
     },
   });
   return data ?? DEFAULT_ART_LITERATURE;
+}
+
+export function useAmazioSettings(): AmazioSettings {
+  const art = useArtLiteratureSettings();
+  return {
+    ...DEFAULT_AMAZIO,
+    ...(art.amazio ?? {}),
+  };
 }
 
 // ==========================================
