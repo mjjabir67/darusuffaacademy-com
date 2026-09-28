@@ -13,7 +13,7 @@ const columns = [
   },
   {
     title: "Admission",
-    links: [{ to: "/admission", label: "Application form" }],
+    links: [{ to: "/admission", label: "Admission & Form" }],
   },
   {
     title: "Academic",

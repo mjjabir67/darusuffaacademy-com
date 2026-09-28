@@ -256,11 +256,11 @@ function About() {
               <div className="mt-8 rounded-2xl bg-muted/60 p-5 border border-border">
                 <div className="flex items-center gap-2 font-medium text-foreground text-sm">
                   <MessageSquare size={16} className="text-primary" />
-                  Looking for Admission Application?
+                  Looking for Admission Information?
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  To apply online for student admission or download the official registration form,
-                  please visit our dedicated Admission section.
+                  For student admission guidelines, eligibility criteria, and downloading the
+                  official application form, please visit our dedicated Admission section.
                 </p>
                 <Link
                   to="/admission"

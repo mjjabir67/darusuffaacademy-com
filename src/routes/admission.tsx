@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  CheckCircle,
-  Send,
   Download,
   FileText,
   Check,
@@ -12,12 +10,12 @@ import {
   Phone,
   Mail,
   MessageCircle,
-  Building2,
   MapPin,
   Sparkles,
-  ArrowRight,
   Loader2,
-  AlertCircle,
+  Calendar,
+  Clock,
+  Compass,
 } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
 import {
@@ -25,17 +23,10 @@ import {
   useAdmissionSettings,
   DEFAULT_ADMISSION,
   DEFAULT_FACILITIES,
-  DEFAULT_ADMISSION_FIELDS,
-  type AdmissionFormField,
 } from "@/lib/cms";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { generateAdmissionPdf } from "@/lib/admissionPdf";
-import { submitAdmissionApplication } from "@/lib/admissions";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admission")({
@@ -45,7 +36,7 @@ export const Route = createFileRoute("/admission")({
       {
         name: "description",
         content:
-          "Admission to Darusuffa Academy: integrated Dars with High School, Higher Secondary and Degree studies at Vadeesunnah, Kolathur. Apply online or download the official form.",
+          "Admission to Darusuffa Academy: integrated Dars with High School, Higher Secondary and Degree studies at Vadeesunnah, Kolathur. Download the official admission form or contact the campus office.",
       },
       { property: "og:title", content: "Admission | Darusuffa Academy" },
       {
@@ -58,45 +49,16 @@ export const Route = createFileRoute("/admission")({
   component: Admission,
 });
 
-type ApplicationFormValues = {
-  class_to_join: string;
-  student_name: string;
-  father_name: string;
-  address: string;
-  place: string;
-  district: string;
-  phone: string;
-  whatsapp: string;
-  [key: string]: string;
-};
-
-const INITIAL_FORM_VALUES: ApplicationFormValues = {
-  class_to_join: "",
-  student_name: "",
-  father_name: "",
-  address: "",
-  place: "",
-  district: "",
-  phone: "",
-  whatsapp: "",
-};
-
 function Admission() {
   const CONTACT = useContactSettings();
   const ADMISSION = useAdmissionSettings() ?? DEFAULT_ADMISSION;
-
-  // Online Application Form State
-  const [appValues, setAppValues] = useState<ApplicationFormValues>(INITIAL_FORM_VALUES);
-  const [appErrors, setAppErrors] = useState<Record<string, string>>({});
-  const [appSubmitting, setAppSubmitting] = useState(false);
-  const [appSubmitted, setAppSubmitted] = useState(false);
 
   // PDF download loading state
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const institutionName = ADMISSION.institutionName || "DARUSUFFA ACADEMY";
   const institutionSubtitle = ADMISSION.institutionSubtitle || "MUHYISUNNA INTEGRATED DARS";
-  const institutionLocation = ADMISSION.institutionLocation || "Vadeesunna, Kolathur, Malappuram";
+  const institutionLocation = ADMISSION.institutionLocation || "Vadeesunnah, Kolathur, Malappuram";
   const contactPhone =
     ADMISSION.contactPhone ||
     ADMISSION.phoneOverride?.trim() ||
@@ -111,11 +73,6 @@ function Admission() {
     ADMISSION.facilities && ADMISSION.facilities.length > 0
       ? ADMISSION.facilities
       : DEFAULT_FACILITIES;
-
-  const formFields =
-    ADMISSION.formFields && ADMISSION.formFields.length > 0
-      ? ADMISSION.formFields.filter((f) => f.visible !== false)
-      : DEFAULT_ADMISSION_FIELDS;
 
   const showDownload = ADMISSION.showDownloadForm !== false;
 
@@ -138,136 +95,9 @@ function Admission() {
     }
   };
 
-  // Field change handler
-  const handleFieldChange = (fieldId: string, val: string) => {
-    setAppValues((prev) => ({ ...prev, [fieldId]: val }));
-    if (appErrors[fieldId]) {
-      setAppErrors((prev) => {
-        const next = { ...prev };
-        delete next[fieldId];
-        return next;
-      });
-    }
-  };
-
-  // Validate Application Form
-  const validateApplication = (): boolean => {
-    const errs: Record<string, string> = {};
-
-    // 1. Class to Join
-    if (!appValues.class_to_join?.trim()) {
-      errs.class_to_join = "Please select the class to join";
-    }
-
-    // 2. Student Name
-    if (!appValues.student_name?.trim()) {
-      errs.student_name = "Student name cannot be empty";
-    } else if (appValues.student_name.trim().length < 2) {
-      errs.student_name = "Please enter a valid student name";
-    }
-
-    // 3. Father Name
-    if (!appValues.father_name?.trim()) {
-      errs.father_name = "Father name cannot be empty";
-    } else if (appValues.father_name.trim().length < 2) {
-      errs.father_name = "Please enter a valid father name";
-    }
-
-    // 4. Address
-    if (!appValues.address?.trim()) {
-      errs.address = "Address cannot be empty";
-    }
-
-    // 5. Place
-    if (!appValues.place?.trim()) {
-      errs.place = "Place cannot be empty";
-    }
-
-    // 6. District
-    if (!appValues.district?.trim()) {
-      errs.district = "District cannot be empty";
-    }
-
-    // 7. Phone Number
-    const phoneClean = appValues.phone?.replace(/[\s\-()]/g, "") || "";
-    if (!phoneClean) {
-      errs.phone = "Phone number is required";
-    } else if (phoneClean.length < 8) {
-      errs.phone = "Please enter a valid phone number (at least 8-10 digits)";
-    }
-
-    // 8. WhatsApp Number
-    const waClean = appValues.whatsapp?.replace(/[\s\-()]/g, "") || "";
-    if (!waClean) {
-      errs.whatsapp = "WhatsApp number is required";
-    } else if (waClean.length < 8) {
-      errs.whatsapp = "Please enter a valid WhatsApp number";
-    }
-
-    // Dynamic custom fields validation
-    formFields.forEach((field) => {
-      const key = field.name || field.id;
-      if (
-        field.required &&
-        ![
-          "class_to_join",
-          "student_name",
-          "father_name",
-          "address",
-          "place",
-          "district",
-          "phone",
-          "whatsapp",
-        ].includes(key)
-      ) {
-        if (!appValues[key]?.trim()) {
-          errs[key] = `${field.label} is required`;
-        }
-      }
-    });
-
-    setAppErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Submit Application Form
-  const handleSubmitApplication = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateApplication()) {
-      toast.error("Please fill in all required fields correctly before submitting.");
-      return;
-    }
-
-    setAppSubmitting(true);
-
-    try {
-      const result = await submitAdmissionApplication(appValues, ADMISSION.admissionYear);
-
-      if (!result.success) {
-        throw new Error(result.message || "Failed to submit application.");
-      }
-
-      setAppSubmitted(true);
-      toast.success(
-        result.message ||
-          "Application submitted successfully. Your application has been received by Darusuffa Academy.",
-      );
-    } catch (err: unknown) {
-      console.error("Submission failed:", err);
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : "Failed to submit application. Please check your connection and try again.",
-      );
-    } finally {
-      setAppSubmitting(false);
-    }
-  };
-
   return (
     <PageShell
-      eyebrow={ADMISSION.eyebrow || "Admission Information & Applications"}
+      eyebrow={ADMISSION.eyebrow || "Admission Information & Guidelines"}
       title={ADMISSION.title || "Admission"}
       intro={
         ADMISSION.intro ||
@@ -297,31 +127,23 @@ function Admission() {
 
           <p className="mx-auto mt-6 max-w-3xl text-sm sm:text-base leading-relaxed text-muted-foreground">
             {ADMISSION.overviewText ||
-              "Our campus, located in a serene and spiritually enriching environment, offers the perfect setting for holistic development. Interested candidates are encouraged to apply online or download the official application form for direct campus submission."}
+              "Our campus, located in a serene and spiritually enriching environment, offers the perfect setting for holistic development. Interested candidates are encouraged to download the official admission form or contact our office directly for campus submission and verification."}
           </p>
 
-          {/* APPLICATION OPTIONS */}
+          {/* ACTION BUTTONS */}
           <div className="mt-8 pt-6 border-t border-border/80 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <a
-              href="#apply-online"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-sm sm:text-base font-semibold text-primary-foreground shadow-md hover:opacity-95 transition-all active:scale-[0.98]"
-            >
-              Apply Online
-              <ArrowRight size={17} />
-            </a>
-
             {showDownload && (
               <Button
                 type="button"
-                variant="outline"
+                variant="default"
                 onClick={handleDownloadForm}
                 disabled={downloadingPdf}
-                className="inline-flex items-center gap-2 rounded-full border-primary/40 bg-background px-6 py-3.5 font-display text-sm sm:text-base font-semibold text-primary hover:bg-primary/10 shadow-xs transition-all h-auto"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-sm sm:text-base font-semibold text-primary-foreground shadow-md hover:opacity-95 transition-all active:scale-[0.98] h-auto"
               >
                 {downloadingPdf ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Generating PDF...
+                    Generating Form PDF...
                   </>
                 ) : (
                   <>
@@ -334,24 +156,24 @@ function Admission() {
 
             <a
               href={`tel:${contactPhone.replace(/\s/g, "")}`}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-3 font-display text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-3.5 font-display text-sm font-semibold text-foreground hover:bg-muted transition-colors shadow-2xs"
             >
-              <Phone size={14} className="text-primary" />
-              {ADMISSION.callButtonText || "Call Office"}
+              <Phone size={15} className="text-primary" />
+              {ADMISSION.callButtonText || "Call Admission Desk"}
             </a>
 
             <a
               href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/40 px-5 py-3 font-display text-xs sm:text-sm font-medium text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/40 px-6 py-3.5 font-display text-sm font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors shadow-2xs"
             >
-              <MessageCircle size={14} />
-              {ADMISSION.whatsappButtonText || "Apply on WhatsApp"}
+              <MessageCircle size={15} />
+              {ADMISSION.whatsappButtonText || "Inquire on WhatsApp"}
             </a>
           </div>
 
-          {/* Contact Us Details */}
+          {/* Contact Details Footer Strip */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm text-muted-foreground pt-4 border-t border-border/40">
             <a
               href={`tel:${contactPhone.replace(/\s/g, "")}`}
@@ -372,6 +194,11 @@ function Admission() {
                 Email: <strong className="text-foreground">{contactEmail}</strong>
               </span>
             </a>
+            <span className="hidden sm:inline text-border">•</span>
+            <div className="flex items-center gap-1.5">
+              <Clock size={14} className="text-primary" />
+              <span>Office Hours: 9:00 AM – 4:30 PM</span>
+            </div>
           </div>
         </div>
       </section>
@@ -422,13 +249,26 @@ function Admission() {
             {ADMISSION.card1Description ||
               "Our institution nurtures students who are not only academically competent but also morally upright and spiritually guided. A well-structured curriculum integrates modern subjects with Islamic studies — Qur'an, Hadith, Fiqh, Islamic History and Ethics — creating a generation that excels in both worlds."}
           </p>
-          <div className="pt-2">
+
+          <div className="pt-2 flex flex-wrap gap-3">
+            {showDownload && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDownloadForm}
+                disabled={downloadingPdf}
+                className="rounded-full gap-2 text-xs sm:text-sm"
+              >
+                <Download size={14} />
+                Download Application Form
+              </Button>
+            )}
             <a
-              href="#apply-online"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+              href="#how-to-apply"
+              className="inline-flex items-center gap-1.5 rounded-full bg-secondary/20 hover:bg-secondary/30 px-4 py-2 text-xs sm:text-sm font-medium text-foreground transition-colors"
             >
-              Start Online Application Form
-              <ArrowRight size={15} />
+              <Compass size={14} />
+              View Admission Steps
             </a>
           </div>
         </div>
@@ -454,14 +294,14 @@ function Admission() {
       </section>
 
       {/* 4. HOW TO APPLY STEPS */}
-      <section className="mx-auto max-w-6xl px-5 py-12">
+      <section id="how-to-apply" className="mx-auto max-w-6xl px-5 py-12 scroll-mt-10">
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-8">
           <div>
             <span className="text-xs uppercase font-semibold tracking-wider text-primary">
-              Simple 3-Step Process
+              Admission Procedure
             </span>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mt-1">
-              {ADMISSION.howToApplyTitle || "How to apply"}
+              {ADMISSION.howToApplyTitle || "How to Apply for Admission"}
             </h2>
           </div>
           {ADMISSION.admissionYear && (
@@ -475,9 +315,9 @@ function Admission() {
           {(ADMISSION.steps && ADMISSION.steps.length > 0
             ? ADMISSION.steps
             : [
-                "Submit the online application form below or download the physical admission form.",
-                "Visit the campus at Vadeesunnah, Kolathur with your previous academic records.",
-                "Attend the interaction with the faculty and complete the admission formalities.",
+                "Download the official admission application form or collect it directly from the academy office.",
+                "Fill out the physical form and attach the required academic records and documents.",
+                "Visit the campus at Vadeesunnah, Kolathur for interaction with faculty and complete the admission formalities.",
               ]
           ).map((step, i) => (
             <li
@@ -557,10 +397,10 @@ function Admission() {
         </section>
       )}
 
-      {/* 6. MANUAL ADMISSION FORM DOWNLOAD CTA */}
+      {/* 6. OFFICIAL ADMISSION FORM DOWNLOAD CTA */}
       {showDownload && (
-        <section id="download-form" className="mx-auto max-w-4xl px-5 py-12">
-          <div className="rounded-3xl border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-card to-primary/5 p-6 sm:p-8 shadow-sm">
+        <section id="download-form" className="mx-auto max-w-5xl px-5 py-16">
+          <div className="rounded-3xl border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-card to-primary/5 p-6 sm:p-10 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -569,17 +409,17 @@ function Admission() {
                   </div>
                   <div>
                     <span className="text-xs uppercase tracking-wider text-primary font-bold">
-                      Official Document
+                      Official Application Form
                     </span>
                     <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-                      Prefer a manual admission form?
+                      Download Admission Form
                     </h3>
                   </div>
                 </div>
 
                 <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
                   {ADMISSION.downloadDescription ||
-                    "Download and print our official application form, fill it out by hand, and submit it directly to the campus admission desk."}
+                    "Download and print our official application form, fill it out by hand, attach the necessary certificates, and submit it directly to the campus admission desk."}
                 </p>
               </div>
 
@@ -598,7 +438,7 @@ function Admission() {
                   ) : (
                     <>
                       <Download size={18} />
-                      {ADMISSION.downloadButtonText || "Download Admission Form"}
+                      {ADMISSION.downloadButtonText || "Download Admission Form (PDF)"}
                     </>
                   )}
                 </Button>
@@ -608,372 +448,86 @@ function Admission() {
         </section>
       )}
 
-      {/* 7. ONLINE ADMISSION APPLICATION FORM SECTION */}
-      <section id="apply-online" className="surface-ink px-5 py-20 mt-6 scroll-mt-10">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-10 text-center">
-            <span className="eyebrow">{ADMISSION.formTitle || "ADMISSION FORM-2025"}</span>
-            <h2 className="mt-3 font-display text-3xl text-ink-foreground sm:text-4xl font-bold">
-              Online Admission Application
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-ink-foreground/80 text-sm sm:text-base">
-              Submit your application directly to Darusuffa Academy. All fields marked with an
-              asterisk (<span className="text-destructive font-bold">*</span>) are required.
-            </p>
-          </div>
-
-          {appSubmitted ? (
-            <div className="card-soft p-10 text-center border border-border shadow-lg">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
-                <CheckCircle size={36} />
-              </div>
-              <h3 className="mt-6 font-display text-2xl font-bold text-foreground">
-                Application Submitted Successfully
+      {/* 7. CAMPUS VISIT & DIRECT CONTACT INFO */}
+      <section className="mx-auto max-w-5xl px-5 pb-20">
+        <div className="card-soft rounded-3xl p-6 sm:p-10 border border-border bg-card">
+          <div className="grid gap-8 md:grid-cols-2 items-center">
+            <div className="space-y-4">
+              <span className="text-xs uppercase font-semibold tracking-wider text-primary">
+                Direct Submission &amp; Inquiry
+              </span>
+              <h3 className="font-display text-2xl font-bold text-foreground">
+                Visit Campus or Contact Admission Desk
               </h3>
-              <p className="mx-auto mt-3 max-w-lg text-base text-foreground font-medium">
-                Application submitted successfully. Your application has been received by Darusuffa
-                Academy.
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                For seat availability, intake schedules, and campus tours, prospective students and
+                parents are welcome to visit our administrative office during working hours.
               </p>
-              <p className="mx-auto mt-2 max-w-md text-xs text-muted-foreground leading-relaxed">
-                Our admission committee will review the details and contact you via phone or
-                WhatsApp regarding the campus interview and verification.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setAppValues(INITIAL_FORM_VALUES);
-                    setAppErrors({});
-                    setAppSubmitted(false);
-                  }}
-                  className="rounded-full px-6"
-                >
-                  Submit Another Application
-                </Button>
-                {showDownload && (
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={handleDownloadForm}
-                    disabled={downloadingPdf}
-                    className="rounded-full px-6 gap-2"
-                  >
-                    <Download size={15} />
-                    Download Copy as PDF
-                  </Button>
-                )}
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start gap-3 text-sm">
+                  <MapPin size={18} className="text-primary mt-0.5 shrink-0" />
+                  <span className="text-muted-foreground">
+                    <strong className="text-foreground">Campus: </strong>
+                    {CONTACT.address || "Vadeesunnah, Kolathur, Malappuram, Kerala"}
+                  </span>
+                </div>
+
+                <div className="flex items-start gap-3 text-sm">
+                  <Phone size={18} className="text-primary mt-0.5 shrink-0" />
+                  <span className="text-muted-foreground">
+                    <strong className="text-foreground">Phone: </strong>
+                    <a
+                      href={`tel:${contactPhone.replace(/\s/g, "")}`}
+                      className="hover:text-primary"
+                    >
+                      {contactPhone}
+                    </a>
+                  </span>
+                </div>
+
+                <div className="flex items-start gap-3 text-sm">
+                  <Mail size={18} className="text-primary mt-0.5 shrink-0" />
+                  <span className="text-muted-foreground">
+                    <strong className="text-foreground">Email: </strong>
+                    <a href={`mailto:${contactEmail}`} className="hover:text-primary">
+                      {contactEmail}
+                    </a>
+                  </span>
+                </div>
+
+                <div className="flex items-start gap-3 text-sm">
+                  <Calendar size={18} className="text-primary mt-0.5 shrink-0" />
+                  <span className="text-muted-foreground">
+                    <strong className="text-foreground">Office Days: </strong>
+                    Monday to Saturday, 9:00 AM – 4:30 PM
+                  </span>
+                </div>
               </div>
             </div>
-          ) : (
-            <form
-              onSubmit={handleSubmitApplication}
-              className="card-soft space-y-6 p-6 sm:p-10 font-enquiry text-foreground shadow-xl border border-border"
-              noValidate
-            >
-              {/* Form Header Info Banner */}
-              <div className="rounded-2xl bg-primary/5 border border-primary/20 p-4 text-xs text-muted-foreground flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-foreground">{institutionName}</span>
-                  <div className="text-[11px]">
-                    {institutionSubtitle} — {institutionLocation}
-                  </div>
-                </div>
-                <span className="font-mono text-primary font-bold">
-                  {ADMISSION.admissionYear || "2025"}
-                </span>
+
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 space-y-4 text-center flex flex-col items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <MessageCircle size={28} />
               </div>
-
-              {/* 1. Class to Join */}
-              <div className="space-y-2">
-                <Label htmlFor="class_to_join" className="text-sm font-semibold">
-                  1. Class to Join <span className="text-destructive">*</span>
-                </Label>
-                {(() => {
-                  const classField = formFields.find(
-                    (f) => f.name === "class_to_join" || f.id === "class_to_join",
-                  );
-                  const options =
-                    classField?.options && classField.options.length > 0
-                      ? classField.options
-                      : ["8th Class", "9th Class", "Plus One"];
-
-                  return (
-                    <select
-                      id="class_to_join"
-                      value={appValues.class_to_join}
-                      onChange={(e) => handleFieldChange("class_to_join", e.target.value)}
-                      className={`flex h-11 w-full rounded-xl border bg-background px-3.5 py-2 text-sm ring-offset-background transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
-                        appErrors.class_to_join
-                          ? "border-destructive bg-destructive/5"
-                          : "border-input"
-                      }`}
-                    >
-                      <option value="">-- Select Class to Join --</option>
-                      {options.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  );
-                })()}
-                {appErrors.class_to_join && (
-                  <p className="text-xs text-destructive flex items-center gap-1">
-                    <AlertCircle size={12} />
-                    {appErrors.class_to_join}
-                  </p>
-                )}
-              </div>
-
-              {/* 2 & 3. Student Name & Father Name */}
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="student_name" className="text-sm font-semibold">
-                    2. Name of Student <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="student_name"
-                    value={appValues.student_name}
-                    onChange={(e) => handleFieldChange("student_name", e.target.value)}
-                    placeholder="Enter student's full name"
-                    className={`rounded-xl h-11 ${
-                      appErrors.student_name ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.student_name && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.student_name}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="father_name" className="text-sm font-semibold">
-                    3. Name of Father <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="father_name"
-                    value={appValues.father_name}
-                    onChange={(e) => handleFieldChange("father_name", e.target.value)}
-                    placeholder="Enter father or guardian name"
-                    className={`rounded-xl h-11 ${
-                      appErrors.father_name ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.father_name && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.father_name}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* 4. Complete Address */}
-              <div className="space-y-2">
-                <Label htmlFor="address" className="text-sm font-semibold">
-                  4. Address <span className="text-destructive">*</span>
-                </Label>
-                <Textarea
-                  id="address"
-                  value={appValues.address}
-                  onChange={(e) => handleFieldChange("address", e.target.value)}
-                  placeholder="Permanent house name, street, post office and PIN..."
-                  rows={3}
-                  className={`rounded-xl ${
-                    appErrors.address ? "border-destructive bg-destructive/5" : ""
-                  }`}
-                />
-                {appErrors.address && (
-                  <p className="text-xs text-destructive flex items-center gap-1">
-                    <AlertCircle size={12} />
-                    {appErrors.address}
-                  </p>
-                )}
-              </div>
-
-              {/* 5 & 6. Place & District */}
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="place" className="text-sm font-semibold">
-                    5. Place <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="place"
-                    value={appValues.place}
-                    onChange={(e) => handleFieldChange("place", e.target.value)}
-                    placeholder="e.g. Kolathur or Perinthalmanna"
-                    className={`rounded-xl h-11 ${
-                      appErrors.place ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.place && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.place}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="district" className="text-sm font-semibold">
-                    6. District <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="district"
-                    value={appValues.district}
-                    onChange={(e) => handleFieldChange("district", e.target.value)}
-                    placeholder="e.g. Malappuram"
-                    className={`rounded-xl h-11 ${
-                      appErrors.district ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.district && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.district}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* 7 & 8. Phone Number & WhatsApp Number */}
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm font-semibold">
-                    7. Phone Number <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={appValues.phone}
-                    onChange={(e) => handleFieldChange("phone", e.target.value)}
-                    placeholder="+91 98765 43210"
-                    className={`rounded-xl h-11 font-mono ${
-                      appErrors.phone ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.phone && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.phone}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp" className="text-sm font-semibold">
-                    8. WhatsApp Number <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="whatsapp"
-                    type="tel"
-                    value={appValues.whatsapp}
-                    onChange={(e) => handleFieldChange("whatsapp", e.target.value)}
-                    placeholder="+91 98765 43210"
-                    className={`rounded-xl h-11 font-mono ${
-                      appErrors.whatsapp ? "border-destructive bg-destructive/5" : ""
-                    }`}
-                  />
-                  {appErrors.whatsapp && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {appErrors.whatsapp}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Dynamic Additional Fields if configured in admin */}
-              {formFields
-                .filter(
-                  (f) =>
-                    ![
-                      "class_to_join",
-                      "student_name",
-                      "father_name",
-                      "address",
-                      "place",
-                      "district",
-                      "phone",
-                      "whatsapp",
-                    ].includes(f.name || f.id),
-                )
-                .map((field) => {
-                  const key = field.name || field.id;
-                  return (
-                    <div key={key} className="space-y-2">
-                      <Label htmlFor={key} className="text-sm font-semibold">
-                        {field.label}{" "}
-                        {field.required && <span className="text-destructive">*</span>}
-                      </Label>
-
-                      {field.type === "select" ? (
-                        <select
-                          id={key}
-                          value={appValues[key] || ""}
-                          onChange={(e) => handleFieldChange(key, e.target.value)}
-                          className="flex h-11 w-full rounded-xl border border-input bg-background px-3.5 py-2 text-sm focus:ring-2 focus:ring-primary"
-                        >
-                          <option value="">-- Select {field.label} --</option>
-                          {(field.options || []).map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      ) : field.type === "textarea" ? (
-                        <Textarea
-                          id={key}
-                          value={appValues[key] || ""}
-                          onChange={(e) => handleFieldChange(key, e.target.value)}
-                          rows={3}
-                          className="rounded-xl"
-                        />
-                      ) : (
-                        <Input
-                          id={key}
-                          type={field.type === "phone" ? "tel" : "text"}
-                          value={appValues[key] || ""}
-                          onChange={(e) => handleFieldChange(key, e.target.value)}
-                          className="rounded-xl h-11"
-                        />
-                      )}
-
-                      {appErrors[key] && (
-                        <p className="text-xs text-destructive flex items-center gap-1">
-                          <AlertCircle size={12} />
-                          {appErrors[key]}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-
-              {/* Submit Application Button */}
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  disabled={appSubmitting}
-                  className="w-full rounded-full py-6 text-base font-semibold shadow-md sm:w-auto sm:px-12 gap-2"
-                >
-                  {appSubmitting ? (
-                    <>
-                      <Loader2 size={18} className="animate-spin" />
-                      Submitting Application...
-                    </>
-                  ) : (
-                    <>
-                      SUBMIT APPLICATION
-                      <Send size={18} />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          )}
+              <h4 className="font-display text-lg font-bold text-foreground">
+                Need Guidance or Assistance?
+              </h4>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xs">
+                Connect with our admission guidance coordinator directly on WhatsApp for instant
+                assistance.
+              </p>
+              <a
+                href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 font-display text-xs sm:text-sm font-semibold shadow-sm transition-colors"
+              >
+                <MessageCircle size={16} />
+                Chat with Admission Coordinator
+              </a>
+            </div>
+          </div>
         </div>
       </section>
     </PageShell>

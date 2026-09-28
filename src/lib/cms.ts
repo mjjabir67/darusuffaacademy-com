@@ -443,8 +443,8 @@ export const DEFAULT_ADMISSION: AdmissionSettings = {
     "We welcome students who aspire to gain both academic excellence and moral grounding through a unique curriculum that combines modern education with Islamic values.",
   overviewText:
     "Our campus, located in a serene and spiritually enriching environment, offers the perfect setting for holistic development. Interested candidates are encouraged to contact the office or visit our campus for detailed admission procedures and guidance. Join us in shaping a future rooted in knowledge, character and faith.",
-  callButtonText: "Call the office",
-  whatsappButtonText: "Apply on WhatsApp",
+  callButtonText: "Call Admission Desk",
+  whatsappButtonText: "Inquire on WhatsApp",
   phoneOverride: "",
   whatsappOverride: "",
   card1Title: "Integrated Education with Purpose",
@@ -455,9 +455,9 @@ export const DEFAULT_ADMISSION: AdmissionSettings = {
     "The campus is peacefully situated in a serene and spiritually uplifting environment, ideal for focused learning, personal reflection and community life. Dedicated faculty, modern classrooms and co-curricular activities ensure the holistic development of every student.",
   howToApplyTitle: "How to apply",
   steps: [
-    "Contact the office by phone or WhatsApp to check the current intake.",
-    "Visit the campus at Vadeesunnah, Kolathur with previous academic records.",
-    "Attend the interaction with the faculty and complete the admission formalities.",
+    "Download the official admission form or collect it directly from the academy office.",
+    "Fill out the physical form and attach the required academic records and certificates.",
+    "Visit the campus at Vadeesunnah, Kolathur for interaction with faculty and complete the admission formalities.",
   ],
   showEligibility: true,
   eligibilityTitle: "Eligibility Criteria",
