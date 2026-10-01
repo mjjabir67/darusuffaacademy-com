@@ -23,6 +23,7 @@ import {
   STUDENT_BATCHES,
   type StudentBatch,
 } from "@/lib/student-auth";
+import { fetchPublicStudentsForBatch, verifyStudentLogin } from "@/lib/students-service";
 
 export const Route = createFileRoute("/student-login")({
   ssr: false,
@@ -89,15 +90,10 @@ function StudentLoginPage() {
     setLoadingStudents(true);
     setError(null);
 
-    fetch(`/api/public/students?batch=${selectedBatch}`)
-      .then((res) => res.json())
-      .then((data) => {
+    fetchPublicStudentsForBatch(selectedBatch as StudentBatch)
+      .then((students) => {
         if (isMounted) {
-          if (Array.isArray(data.students)) {
-            setStudentsList(data.students);
-          } else {
-            setStudentsList([]);
-          }
+          setStudentsList(students);
           setLoadingStudents(false);
         }
       })
@@ -167,29 +163,24 @@ function StudentLoginPage() {
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/student/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentId: selectedStudent.id,
-          name: selectedStudent.name,
-          batch: selectedBatch,
-          loginCode: cleanCode,
-        }),
-      });
+      const result = await verifyStudentLogin(
+        selectedBatch as StudentBatch,
+        selectedStudent.id,
+        cleanCode,
+      );
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        setError(data.message || "Invalid login code. Please check and try again.");
+      if (!result.success || !result.token || !result.student) {
+        setError(result.message || "Invalid login code. Please check and try again.");
         setLoginCode("");
         return;
       }
 
       // Successful login
-      setStudentSession(data.token, data.student);
+      setStudentSession(result.token, {
+        id: result.student.id,
+        name: result.student.name,
+        batch: result.student.batch,
+      });
       navigate({ to: "/student" });
     } catch (err: unknown) {
       console.error("[Student Login] Request error:", err);

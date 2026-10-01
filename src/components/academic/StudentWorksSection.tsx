@@ -26,6 +26,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+import { fetchPublicStudentWorks } from "@/lib/students-service";
+
 export interface PublicStudentWork {
   id: string;
   student_name: string;
@@ -85,14 +87,10 @@ export function StudentWorksSection() {
   } = useQuery<PublicStudentWork[]>({
     queryKey: ["public-student-works", selectedBatch, selectedType],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (selectedBatch !== "All") params.set("batch", selectedBatch);
-      if (selectedType !== "All") params.set("work_type", selectedType);
-
-      const res = await fetch(`/api/public/student-works?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load student works");
-      const data = await res.json();
-      return data.works || [];
+      return (await fetchPublicStudentWorks(
+        selectedBatch,
+        selectedType,
+      )) as unknown as PublicStudentWork[];
     },
     staleTime: 30_000,
   });

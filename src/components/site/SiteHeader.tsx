@@ -76,14 +76,17 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
 
   return (
     <header
-      className={
+      className={`transition-all duration-300 ${
         overlay
-          ? "absolute inset-x-0 top-0 z-50"
-          : "sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur"
-      }
+          ? "absolute inset-x-0 top-0 z-50 animate-fade-in-down"
+          : "sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur animate-fade-in-down"
+      }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-5 py-4">
-        <Link to="/" className="flex items-center gap-3">
+        <Link
+          to="/"
+          className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        >
           <img
             src={overlay ? logoWhite : logoDark}
             alt="Darusuffa Academy logo"
@@ -168,7 +171,7 @@ export function SiteHeader({ variant = "solid" }: { variant?: "solid" | "overlay
       </div>
 
       {open && (
-        <div className="border-t border-border bg-background px-5 py-3 md:hidden">
+        <div className="border-t border-border bg-background/95 backdrop-blur-md px-5 py-3 md:hidden animate-fade-in-down duration-200">
           {nav.map((item) => (
             <Link
               key={item.to}

@@ -29,6 +29,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAdmissionApplications } from "@/lib/admissions";
+import { fetchAdminSubmissions } from "@/lib/students-service";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -111,22 +112,11 @@ function AdminLayout() {
     queryKey: ["admin", "pending-submissions-count"],
     queryFn: async () => {
       try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        if (!token) return 0;
-        const res = await fetch("/api/admin/submissions?status=Submitted", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.submissions)) {
-            return json.submissions.length;
-          }
-        }
+        const subs = await fetchAdminSubmissions();
+        return subs.filter((s) => s.status === "Submitted").length;
       } catch {
-        // fallback
+        return 0;
       }
-      return 0;
     },
     refetchInterval: 30000,
   });

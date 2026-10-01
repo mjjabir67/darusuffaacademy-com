@@ -38,9 +38,15 @@
   --color-gold: var(--gold);
   --font-manjari: "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", sans-serif;
   --font-malayalam: "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", sans-serif;
-  --font-display: "Outfit", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Figtree", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
-  --font-enquiry: "Lexend Deca", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    "Outfit", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-sans:
+    "Figtree", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-enquiry:
+    "Lexend Deca", "Manjari", "Noto Sans Malayalam", "Gayathri", "Anek Malayalam", ui-sans-serif,
+    system-ui, sans-serif;
 }
 
 :root {

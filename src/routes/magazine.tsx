@@ -5,6 +5,7 @@ import { useMagazines, type MagazineItem } from "@/lib/cms";
 import { BookOpen, Calendar, ExternalLink, FileText, X, Download, Maximize2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { RevealOnScroll, StaggerContainer } from "@/components/site/AnimationUtils";
 
 export const Route = createFileRoute("/magazine")({
   head: () => ({
@@ -46,106 +47,111 @@ function MagazinePage() {
       title="Magazines"
       intro="Periodicals, scholarly journals, and annual campus editions published by the students and faculties of Darusuffa Academy."
     >
-      <section className="mx-auto max-w-6xl px-5 py-12">
-        {magazines.length > 0 ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {magazines.map((mag) => {
-              const hasPdf = mag.source_type === "pdf" && Boolean(mag.pdf_url);
-              const hasLink = mag.source_type === "link" && Boolean(mag.external_url);
-              const canOpen = hasPdf || hasLink;
+      <RevealOnScroll animation="fade-up">
+        <section className="mx-auto max-w-6xl px-5 py-12">
+          {magazines.length > 0 ? (
+            <StaggerContainer
+              staggerIntervalMs={70}
+              className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {magazines.map((mag) => {
+                const hasPdf = mag.source_type === "pdf" && Boolean(mag.pdf_url);
+                const hasLink = mag.source_type === "link" && Boolean(mag.external_url);
+                const canOpen = hasPdf || hasLink;
 
-              return (
-                <article
-                  key={mag.id}
-                  className="card-soft flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  {/* Cover Image or Fallback Header */}
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted/60">
-                    {mag.cover_image ? (
-                      <img
-                        src={mag.cover_image}
-                        alt={mag.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center text-muted-foreground">
-                        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                          <BookOpen size={32} />
-                        </div>
-                        <span className="font-display text-lg font-medium text-foreground">
-                          {mag.title}
-                        </span>
-                        {mag.publication_date && (
-                          <span className="mt-1 text-xs text-muted-foreground">
-                            Edition: {mag.publication_date}
+                return (
+                  <article
+                    key={mag.id}
+                    className="card-soft flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40 group"
+                  >
+                    {/* Cover Image or Fallback Header */}
+                    <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted/60">
+                      {mag.cover_image ? (
+                        <img
+                          src={mag.cover_image}
+                          alt={mag.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center text-muted-foreground">
+                          <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            <BookOpen size={32} />
+                          </div>
+                          <span className="font-display text-lg font-medium text-foreground font-bold">
+                            {mag.title}
                           </span>
-                        )}
-                      </div>
-                    )}
+                          {mag.publication_date && (
+                            <span className="mt-1 text-xs text-muted-foreground">
+                              Edition: {mag.publication_date}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-                    {/* Date Badge */}
-                    {mag.publication_date && (
-                      <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur shadow-sm">
-                        <Calendar size={12} className="text-primary" />
-                        <span>{mag.publication_date}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="flex flex-1 flex-col justify-between p-6">
-                    <div>
-                      <h2 className="font-display text-xl text-foreground line-clamp-2">
-                        {mag.title}
-                      </h2>
-                      {mag.description && (
-                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                          {mag.description}
-                        </p>
+                      {/* Date Badge */}
+                      {mag.publication_date && (
+                        <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur shadow-sm">
+                          <Calendar size={12} className="text-primary" />
+                          <span>{mag.publication_date}</span>
+                        </div>
                       )}
                     </div>
 
-                    {/* Action Button */}
-                    <div className="mt-6 pt-4 border-t border-border">
-                      <Button
-                        type="button"
-                        onClick={() => handleOpenMagazine(mag)}
-                        disabled={!canOpen}
-                        className="w-full justify-center gap-2 rounded-xl"
-                        variant={canOpen ? "default" : "outline"}
-                      >
-                        {mag.source_type === "pdf" ? (
-                          <>
-                            <FileText size={16} />
-                            <span>Read Magazine</span>
-                          </>
-                        ) : (
-                          <>
-                            <ExternalLink size={16} />
-                            <span>Open Magazine</span>
-                          </>
+                    {/* Body Content */}
+                    <div className="flex flex-1 flex-col justify-between p-6">
+                      <div>
+                        <h2 className="font-display text-xl text-foreground line-clamp-2 font-bold">
+                          {mag.title}
+                        </h2>
+                        {mag.description && (
+                          <p className="mt-3 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+                            {mag.description}
+                          </p>
                         )}
-                      </Button>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="mt-6 pt-4 border-t border-border">
+                        <Button
+                          type="button"
+                          onClick={() => handleOpenMagazine(mag)}
+                          disabled={!canOpen}
+                          className="w-full justify-center gap-2 rounded-xl transition-all duration-200 active:scale-[0.98]"
+                          variant={canOpen ? "default" : "outline"}
+                        >
+                          {mag.source_type === "pdf" ? (
+                            <>
+                              <FileText size={16} />
+                              <span>Read Magazine</span>
+                            </>
+                          ) : (
+                            <>
+                              <ExternalLink size={16} />
+                              <span>Open Magazine</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mx-auto max-w-md rounded-3xl border border-dashed border-border p-12 text-center">
-            <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/60" />
-            <h3 className="mt-4 font-display text-xl text-foreground">
-              No magazines published yet
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              New periodicals and publications will appear here once released by the academy
-              editorial board.
-            </p>
-          </div>
-        )}
-      </section>
+                  </article>
+                );
+              })}
+            </StaggerContainer>
+          ) : (
+            <div className="mx-auto max-w-md rounded-3xl border border-dashed border-border p-12 text-center">
+              <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/60" />
+              <h3 className="mt-4 font-display text-xl text-foreground font-bold">
+                No magazines published yet
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                New periodicals and publications will appear here once released by the academy
+                editorial board.
+              </p>
+            </div>
+          )}
+        </section>
+      </RevealOnScroll>
 
       {/* PDF Reader Modal Dialog */}
       {readingMagazine && (

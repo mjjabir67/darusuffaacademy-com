@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageFieldManager } from "@/components/admin/ImageFieldManager";
 import { PageBannerFieldManager } from "@/components/admin/PageBannerFieldManager";
 import { DEFAULT_ACADEMIC, type AcademicSettings } from "@/lib/cms";
+import { fetchAdminSubmissions } from "@/lib/students-service";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admin/academic")({
@@ -39,28 +40,15 @@ function AcademicAdmin() {
     queryKey: ["admin", "submissions-academic-count"],
     queryFn: async () => {
       try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        if (!token) return { total: 0, published: 0, pending: 0 };
-        const res = await fetch("/api/admin/submissions", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const json = await res.json();
-          const subs = (json.submissions || []) as Array<{
-            status: string;
-            is_published: boolean;
-          }>;
-          return {
-            total: subs.length,
-            published: subs.filter((s) => s.is_published).length,
-            pending: subs.filter((s) => s.status === "Submitted").length,
-          };
-        }
+        const subs = await fetchAdminSubmissions();
+        return {
+          total: subs.length,
+          published: subs.filter((s) => s.is_published).length,
+          pending: subs.filter((s) => s.status === "Submitted").length,
+        };
       } catch {
-        // ignore
+        return { total: 0, published: 0, pending: 0 };
       }
-      return { total: 0, published: 0, pending: 0 };
     },
   });
 

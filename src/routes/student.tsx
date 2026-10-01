@@ -45,6 +45,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useStudentAuth, type StudentProfile } from "@/lib/student-auth";
 import { uploadMedia, formatDate } from "@/lib/cms";
+import {
+  fetchStudentMySubmissions,
+  submitStudentWorkClient,
+  updateStudentWorkClient,
+  deleteStudentWorkClient,
+  type StudentWorkType,
+  type StudentSubmission,
+} from "@/lib/students-service";
 import logoWhite from "@/assets/darusuffa-logo-white.png";
 
 export const Route = createFileRoute("/student")({
@@ -154,24 +162,18 @@ function StudentDashboardPage() {
 
   // Load submissions
   const loadSubmissions = useCallback(async () => {
-    if (!token) return;
+    if (!token || !student) return;
     setLoadingWorks(true);
     try {
-      const res = await fetch("/api/student/submissions", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Failed to load submissions");
-      const data = await res.json();
-      setSubmissions(data.submissions || []);
+      const works = await fetchStudentMySubmissions(student.id);
+      setSubmissions(works as SubmissionItem[]);
     } catch (err: unknown) {
       console.error("[loadSubmissions] Error:", err);
       toast.error("Could not load your works. Please try again.");
     } finally {
       setLoadingWorks(false);
     }
-  }, [token]);
+  }, [token, student]);
 
   useEffect(() => {
     if (token && student) {
@@ -249,27 +251,15 @@ function StudentDashboardPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/student/submissions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          work_type: workType,
-          description: description.trim(),
-          content: content.trim(),
-          media_url: mediaUrl,
-          file_url: fileUrl,
-          file_name: fileName,
-        }),
+      await submitStudentWorkClient(student, {
+        title: title.trim(),
+        work_type: workType as StudentWorkType,
+        description: description.trim(),
+        content: content.trim(),
+        media_url: mediaUrl,
+        file_url: fileUrl,
+        file_name: fileName,
       });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Submission failed");
-      }
 
       toast.success(
         "Your work is published and now live in the Student Works section on the Academic page!",
@@ -296,32 +286,20 @@ function StudentDashboardPage() {
   // Update existing work
   const handleUpdateWork = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editItem) return;
+    if (!editItem || !student) return;
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/student/submissions", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          id: editItem.id,
-          title: editItem.title,
-          work_type: editItem.work_type,
-          description: editItem.description,
-          content: editItem.content,
-          media_url: editItem.media_url,
-          file_url: editItem.file_url,
-          file_name: editItem.file_name,
-        }),
+      await updateStudentWorkClient(student.id, {
+        id: editItem.id,
+        title: editItem.title,
+        work_type: editItem.work_type as StudentWorkType,
+        description: editItem.description,
+        content: editItem.content,
+        media_url: editItem.media_url,
+        file_url: editItem.file_url,
+        file_name: editItem.file_name,
       });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Update failed");
-      }
 
       toast.success("Submission updated successfully!");
       setEditItem(null);
@@ -336,19 +314,10 @@ function StudentDashboardPage() {
 
   // Delete submission
   const handleDeleteSubmission = async () => {
-    if (!deleteConfirmId || !token) return;
+    if (!deleteConfirmId || !student) return;
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/student/submissions?id=${deleteConfirmId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Delete failed");
-      }
+      await deleteStudentWorkClient(student.id, deleteConfirmId);
 
       toast.success("Submission removed successfully.");
       setDeleteConfirmId(null);

@@ -3,6 +3,7 @@ import { PageShell } from "@/components/site/PageShell";
 import students from "@/assets/students.jpg";
 import { useLanguageDoorSettings } from "@/lib/cms";
 import { Globe, Languages } from "lucide-react";
+import { RevealOnScroll, StaggerContainer } from "@/components/site/AnimationUtils";
 
 export const Route = createFileRoute("/language-door")({
   head: () => ({
@@ -39,46 +40,61 @@ function LanguageDoor() {
     >
       {/* Optional Body Content */}
       {content.bodyContent && (
-        <section className="mx-auto max-w-4xl px-5 pt-8 text-center">
-          <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            {content.bodyContent}
-          </p>
-        </section>
+        <RevealOnScroll animation="fade-up">
+          <section className="mx-auto max-w-4xl px-5 pt-8 text-center">
+            <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              {content.bodyContent}
+            </p>
+          </section>
+        </RevealOnScroll>
       )}
 
-      <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-[1fr_1fr]">
-        <div className="grid gap-5">
-          {languages.length > 0 ? (
-            languages.map((lang, idx) => (
-              <article key={lang.id || idx} className="card-soft p-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Languages size={18} />
-                  </div>
-                  <h2 className="font-display text-xl text-foreground">{lang.name}</h2>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{lang.note}</p>
-              </article>
-            ))
-          ) : (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center">
-              <Globe className="mx-auto h-8 w-8 text-muted-foreground/60" />
-              <p className="mt-2 text-sm text-muted-foreground">No language wings published yet.</p>
-            </div>
-          )}
-        </div>
+      <RevealOnScroll animation="fade-up">
+        <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-[1fr_1fr] items-center">
+          <div className="grid gap-5">
+            {languages.length > 0 ? (
+              <StaggerContainer staggerIntervalMs={70} className="grid gap-5">
+                {languages.map((lang, idx) => (
+                  <article
+                    key={lang.id || idx}
+                    className="card-soft p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
+                        <Languages size={18} />
+                      </div>
+                      <h2 className="font-display text-xl text-foreground font-bold">
+                        {lang.name}
+                      </h2>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {lang.note}
+                    </p>
+                  </article>
+                ))}
+              </StaggerContainer>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+                <Globe className="mx-auto h-8 w-8 text-muted-foreground/60" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  No language wings published yet.
+                </p>
+              </div>
+            )}
+          </div>
 
-        <div className="overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)]">
-          <img
-            src={content.imageUrl || students}
-            alt={content.title || "Students at a Language Door session"}
-            loading="lazy"
-            width={1200}
-            height={900}
-            className="h-full min-h-[300px] w-full object-cover"
-          />
-        </div>
-      </section>
+          <div className="overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)] group">
+            <img
+              src={content.imageUrl || students}
+              alt={content.title || "Students at a Language Door session"}
+              loading="lazy"
+              width={1200}
+              height={900}
+              className="h-full min-h-[300px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+        </section>
+      </RevealOnScroll>
     </PageShell>
   );
 }

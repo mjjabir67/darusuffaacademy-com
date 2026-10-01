@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/site/PageShell";
 import { useAcademicSettings } from "@/lib/cms";
 import { StudentWorksSection } from "@/components/academic/StudentWorksSection";
+import { RevealOnScroll, StaggerContainer } from "@/components/site/AnimationUtils";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/academic")({
@@ -66,50 +67,56 @@ function Academic() {
         "A classical Dars tradition carried forward with modern academics, enrichment programmes and well-equipped facilities."
       }
     >
-      <section className="mx-auto grid max-w-6xl gap-10 px-5 py-20 md:grid-cols-[1.1fr_1fr]">
-        <div className="space-y-10">
-          {blocks.map((block) => (
-            <div key={block.title}>
-              <h2 className="font-display text-2xl">{block.title}</h2>
-              <ul className="mt-4 space-y-3">
-                {block.items.map((item) => (
-                  <li key={item} className="flex gap-3 text-muted-foreground">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <img
-          src={academic.pageImage || students}
-          alt="Students of the Muhyissunna integrated Dars"
-          loading="lazy"
-          width={1200}
-          height={900}
-          className="h-full rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full"
-        />
-      </section>
+      <RevealOnScroll animation="fade-up">
+        <section className="mx-auto grid max-w-6xl gap-10 px-5 py-20 md:grid-cols-[1.1fr_1fr] items-center">
+          <div className="space-y-10">
+            {blocks.map((block) => (
+              <div key={block.title} className="transition-all">
+                <h2 className="font-display text-2xl text-foreground font-bold">{block.title}</h2>
+                <ul className="mt-4 space-y-3">
+                  {block.items.map((item) => (
+                    <li key={item} className="flex gap-3 text-muted-foreground leading-relaxed">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="overflow-hidden rounded-3xl shadow-[var(--shadow-soft)] group border border-border">
+            <img
+              src={academic.pageImage || students}
+              alt="Students of the Muhyissunna integrated Dars"
+              loading="lazy"
+              width={1200}
+              height={900}
+              className="h-full rounded-3xl object-cover shadow-[var(--shadow-soft)] w-full transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+        </section>
+      </RevealOnScroll>
 
       <StudentWorksSection />
 
-      <section className="surface-ink px-5 py-20">
-        <div className="mx-auto max-w-6xl">
-          <p className="eyebrow text-sand">Programmes</p>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {programmes.map((p) => (
-              <Link
-                key={p.to}
-                to={p.to}
-                className="rounded-2xl border border-white/15 bg-white/5 p-8 font-display text-xl transition-colors hover:bg-white/10"
-              >
-                {p.label}
-              </Link>
-            ))}
+      <RevealOnScroll animation="fade-up">
+        <section className="surface-ink px-5 py-20">
+          <div className="mx-auto max-w-6xl">
+            <p className="eyebrow text-sand">Programmes</p>
+            <StaggerContainer staggerIntervalMs={100} className="mt-8 grid gap-6 md:grid-cols-3">
+              {programmes.map((p) => (
+                <Link
+                  key={p.to}
+                  to={p.to}
+                  className="rounded-2xl border border-white/15 bg-white/5 p-8 font-display text-xl transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 hover:border-white/30"
+                >
+                  {p.label}
+                </Link>
+              ))}
+            </StaggerContainer>
           </div>
-        </div>
-      </section>
+        </section>
+      </RevealOnScroll>
     </PageShell>
   );
 }

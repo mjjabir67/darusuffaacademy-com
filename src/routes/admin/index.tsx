@@ -10,6 +10,7 @@ import {
   type AdmissionApplication,
 } from "@/lib/cms";
 import { fetchAdmissionApplications } from "@/lib/admissions";
+import { fetchAdminSubmissions } from "@/lib/students-service";
 import { ArrowRight, Clock, UserCheck, FileText, Globe } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -61,19 +62,11 @@ function Dashboard() {
         })(),
         (async () => {
           try {
-            const { data: sessionData } = await supabase.auth.getSession();
-            const token = sessionData.session?.access_token;
-            const res = await fetch("/api/admin/submissions", {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            if (res.ok) {
-              const json = await res.json();
-              return (json.submissions || []) as SubmissionSummary[];
-            }
+            const subs = await fetchAdminSubmissions();
+            return subs as unknown as SubmissionSummary[];
           } catch {
-            // fallback
+            return [];
           }
-          return [];
         })(),
       ]);
 

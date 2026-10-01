@@ -49,12 +49,12 @@ export function PageShell({
         >
           {/* Custom Banner Background */}
           {hasCustomBanner ? (
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 overflow-hidden">
               <img
                 src={activeBannerUrl!}
                 alt=""
                 aria-hidden="true"
-                className="h-full w-full object-cover object-center pointer-events-none select-none transition-opacity duration-300"
+                className="h-full w-full object-cover object-center pointer-events-none select-none animate-hero-bg"
                 onError={() => setImageError(true)}
               />
               {/* Subtle readability overlay: keeps text legible across themes without obscuring the photo */}
@@ -63,7 +63,7 @@ export function PageShell({
           ) : (
             /* System Default Fallback Background */
             <div
-              className="absolute inset-0 z-0"
+              className="absolute inset-0 z-0 animate-hero-bg"
               style={{
                 backgroundImage: `url(${bannerAsset.url})`,
                 backgroundPosition: "center right",
@@ -77,11 +77,15 @@ export function PageShell({
 
           {/* Banner Content */}
           <div className="relative z-10 mx-auto max-w-6xl">
-            {eyebrow && <p className="eyebrow text-sand">{eyebrow}</p>}
-            <h1 className="mt-3 max-w-2xl font-display text-4xl text-ink-foreground sm:text-5xl">
+            {eyebrow && <p className="eyebrow text-sand animate-fade-in-down">{eyebrow}</p>}
+            <h1 className="mt-3 max-w-2xl font-display text-4xl text-ink-foreground sm:text-5xl animate-fade-in-up delay-100">
               {title}
             </h1>
-            {intro && <p className="mt-4 max-w-2xl text-ink-foreground/80">{intro}</p>}
+            {intro && (
+              <p className="mt-4 max-w-2xl text-ink-foreground/80 animate-fade-in-up delay-200 leading-relaxed">
+                {intro}
+              </p>
+            )}
           </div>
         </section>
         {children}

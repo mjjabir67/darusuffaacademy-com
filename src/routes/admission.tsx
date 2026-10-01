@@ -27,9 +27,15 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { generateAdmissionPdf } from "@/lib/admissionPdf";
+import { OnlineAdmissionDialog } from "@/components/site/OnlineAdmissionDialog";
 import students from "@/assets/students.jpg";
 
 export const Route = createFileRoute("/admission")({
+  validateSearch: (search: Record<string, unknown>): { apply?: boolean } => {
+    return {
+      apply: search.apply === true || search.apply === "true",
+    };
+  },
   head: () => ({
     meta: [
       { title: "Admission | Darusuffa Academy, Kolathur" },
@@ -50,6 +56,8 @@ export const Route = createFileRoute("/admission")({
 });
 
 function Admission() {
+  const search = Route.useSearch();
+  const [isApplyOpen, setIsApplyOpen] = useState(Boolean(search?.apply));
   const CONTACT = useContactSettings();
   const ADMISSION = useAdmissionSettings() ?? DEFAULT_ADMISSION;
 
@@ -251,6 +259,15 @@ function Admission() {
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">
+            <Button
+              type="button"
+              onClick={() => setIsApplyOpen(true)}
+              className="rounded-full gap-2 bg-primary text-primary-foreground font-semibold px-6 shadow-md hover:opacity-95"
+            >
+              <Sparkles size={16} />
+              Apply Online Now
+            </Button>
+
             {showDownload && (
               <Button
                 type="button"
@@ -331,6 +348,27 @@ function Admission() {
             </li>
           ))}
         </ol>
+
+        {/* Online Application Quick Action */}
+        <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <h4 className="font-display text-base font-bold text-foreground">
+              Ready to submit your admission application?
+            </h4>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Complete and submit your official application online directly from your phone or
+              device.
+            </p>
+          </div>
+          <Button
+            type="button"
+            onClick={() => setIsApplyOpen(true)}
+            className="rounded-full bg-primary font-semibold px-6 shrink-0 gap-2 shadow-sm"
+          >
+            <Sparkles size={16} />
+            <span>Apply Online Now</span>
+          </Button>
+        </div>
       </section>
 
       {/* 5. ELIGIBILITY & REQUIRED DOCUMENTS */}
@@ -423,12 +461,22 @@ function Admission() {
                 </p>
               </div>
 
-              <div className="shrink-0">
+              <div className="shrink-0 flex flex-wrap gap-3 items-center">
                 <Button
                   type="button"
+                  onClick={() => setIsApplyOpen(true)}
+                  className="rounded-full bg-primary px-8 py-4 font-display text-sm font-semibold text-primary-foreground shadow-md hover:opacity-90 h-auto gap-2"
+                >
+                  <Sparkles size={18} />
+                  <span>Apply Online Now</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={handleDownloadForm}
                   disabled={downloadingPdf}
-                  className="rounded-full bg-primary px-8 py-4 font-display text-sm font-semibold text-primary-foreground shadow-md hover:opacity-90 h-auto gap-2"
+                  className="rounded-full px-6 py-4 font-display text-sm font-semibold border-border shadow-xs hover:bg-muted h-auto gap-2"
                 >
                   {downloadingPdf ? (
                     <>
@@ -438,7 +486,7 @@ function Admission() {
                   ) : (
                     <>
                       <Download size={18} />
-                      {ADMISSION.downloadButtonText || "Download Admission Form (PDF)"}
+                      {ADMISSION.downloadButtonText || "Download Form (PDF)"}
                     </>
                   )}
                 </Button>
@@ -530,6 +578,9 @@ function Admission() {
           </div>
         </div>
       </section>
+
+      {/* Online Admission Application Modal */}
+      <OnlineAdmissionDialog open={isApplyOpen} onOpenChange={setIsApplyOpen} />
     </PageShell>
   );
 }

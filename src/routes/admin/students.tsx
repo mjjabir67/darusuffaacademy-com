@@ -51,6 +51,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { formatDate } from "@/lib/cms";
+import {
+  fetchAdminStudents,
+  createAdminStudent,
+  updateAdminStudent,
+  deleteAdminStudent,
+  fetchAdminSubmissions,
+  updateAdminSubmission,
+  deleteAdminSubmission,
+  STUDENT_BATCHES as BATCHES,
+  STUDENT_WORK_TYPES as WORK_TYPES,
+  type Student,
+  type StudentBatch,
+  type StudentWorkType,
+  type StudentSubmission as Submission,
+} from "@/lib/students-service";
 
 export const Route = createFileRoute("/admin/students")({
   validateSearch: (
@@ -68,50 +83,6 @@ export const Route = createFileRoute("/admin/students")({
   },
   component: AdminStudentsPage,
 });
-
-type StudentBatch = "G4" | "G5" | "G6" | "G7" | "G8" | "G9";
-const BATCHES: StudentBatch[] = ["G4", "G5", "G6", "G7", "G8", "G9"];
-
-type StudentWorkType = "Speech" | "Poem" | "Article" | "Story" | "Essay" | "Drawing" | "Other";
-
-const WORK_TYPES: StudentWorkType[] = [
-  "Speech",
-  "Poem",
-  "Article",
-  "Story",
-  "Essay",
-  "Drawing",
-  "Other",
-];
-
-interface Student {
-  id: string;
-  name: string;
-  batch: StudentBatch;
-  login_code: string;
-  active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Submission {
-  id: string;
-  student_id: string;
-  student_name: string;
-  batch: StudentBatch;
-  title: string;
-  work_type: StudentWorkType;
-  description?: string;
-  content?: string;
-  media_url?: string;
-  file_url?: string;
-  file_name?: string;
-  status: "Submitted" | "Under Review" | "Approved" | "Rejected";
-  is_published?: boolean;
-  admin_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
 
 function StatusBadge({ status }: { status: Submission["status"] }) {
   switch (status) {
@@ -144,11 +115,6 @@ function StatusBadge({ status }: { status: Submission["status"] }) {
         </span>
       );
   }
-}
-
-async function getAdminToken(): Promise<string> {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token || "";
 }
 
 function AdminStudentsPage() {
@@ -199,15 +165,7 @@ function AdminStudentsPage() {
     refetch: refetchStudents,
   } = useQuery<Student[]>({
     queryKey: ["admin", "students"],
-    queryFn: async () => {
-      const token = await getAdminToken();
-      const res = await fetch("/api/admin/students", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error("Failed to fetch students");
-      const data = await res.json();
-      return data.students || [];
-    },
+    queryFn: fetchAdminStudents,
     refetchInterval: 5000,
   });
 
@@ -217,15 +175,7 @@ function AdminStudentsPage() {
     refetch: refetchSubmissions,
   } = useQuery<Submission[]>({
     queryKey: ["admin", "submissions"],
-    queryFn: async () => {
-      const token = await getAdminToken();
-      const res = await fetch("/api/admin/submissions", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error("Failed to fetch submissions");
-      const data = await res.json();
-      return data.submissions || [];
-    },
+    queryFn: fetchAdminSubmissions,
     refetchInterval: 5000,
   });
 
@@ -248,18 +198,7 @@ function AdminStudentsPage() {
   // Create Student Mutation
   const createStudentMutation = useMutation({
     mutationFn: async (payload: { name: string; batch: StudentBatch; login_code: string }) => {
-      const token = await getAdminToken();
-      const res = await fetch("/api/admin/students", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to create student");
-      return data.student;
+      return await createAdminStudent(payload);
     },
     onSuccess: () => {
       toast.success("Student added successfully!");
@@ -282,18 +221,7 @@ function AdminStudentsPage() {
       login_code?: string;
       active?: boolean;
     }) => {
-      const token = await getAdminToken();
-      const res = await fetch("/api/admin/students", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to update student");
-      return data.student;
+      return await updateAdminStudent(payload);
     },
     onSuccess: () => {
       toast.success("Student updated successfully!");
@@ -308,14 +236,7 @@ function AdminStudentsPage() {
   // Delete Student Mutation
   const deleteStudentMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = await getAdminToken();
-      const res = await fetch(`/api/admin/students?id=${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to delete student");
-      return true;
+      return await deleteAdminStudent(id);
     },
     onSuccess: () => {
       toast.success("Student deleted successfully.");
@@ -336,18 +257,12 @@ function AdminStudentsPage() {
       is_published?: boolean;
       admin_notes?: string;
     }) => {
-      const token = await getAdminToken();
-      const res = await fetch("/api/admin/submissions", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
+      return await updateAdminSubmission({
+        id: payload.id,
+        status: payload.status || "Submitted",
+        is_published: payload.is_published,
+        admin_notes: payload.admin_notes,
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to update submission");
-      return data.submission;
     },
     onSuccess: (updatedSub) => {
       toast.success("Submission updated successfully!");
@@ -366,14 +281,7 @@ function AdminStudentsPage() {
   // Delete Submission Mutation
   const deleteSubmissionMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = await getAdminToken();
-      const res = await fetch(`/api/admin/submissions?id=${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to delete submission");
-      return true;
+      return await deleteAdminSubmission(id);
     },
     onSuccess: () => {
       toast.success("Submission removed.");

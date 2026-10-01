@@ -4,6 +4,7 @@ import { PageShell } from "@/components/site/PageShell";
 import { usePublishedGallery, groupGalleryAlbums, type GalleryAlbum } from "@/lib/cms";
 import { Button } from "@/components/ui/button";
 import { MediaViewerModal } from "@/components/site/MediaViewerModal";
+import { RevealOnScroll, StaggerContainer } from "@/components/site/AnimationUtils";
 import students from "@/assets/students.jpg";
 import campus from "@/assets/campus.jpg";
 
@@ -80,67 +81,75 @@ function Media() {
       title="Media"
       intro="Moments from the programmes, camps and fests of Darusuffa Academy."
     >
-      <section className="mx-auto grid max-w-6xl gap-8 px-5 py-20 md:grid-cols-2">
-        {isLoading && (
-          <div className="col-span-full py-12 text-center text-muted-foreground">
-            Loading gallery albums...
-          </div>
-        )}
-
-        {displayAlbums.map((album) => (
-          <div
-            key={album.slug}
-            id={`gallery-album-card-${album.slug}`}
-            className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-soft)] transition-all hover:shadow-lg"
-          >
-            <div
-              className="relative h-72 w-full cursor-pointer overflow-hidden bg-muted"
-              onClick={() => setActiveAlbum(album)}
-            >
-              <img
-                src={album.coverImage}
-                alt={album.title}
-                loading="lazy"
-                width={1200}
-                height={900}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = campus;
-                }}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur">
-                {album.count} {album.count === 1 ? "Photo" : "Photos"}
-              </span>
+      <RevealOnScroll animation="fade-up">
+        <section className="mx-auto max-w-6xl px-5 py-20">
+          {isLoading && (
+            <div className="col-span-full py-12 text-center text-muted-foreground">
+              Loading gallery albums...
             </div>
+          )}
 
-            <div className="flex flex-1 flex-col justify-between p-6">
-              <div>
-                <h2 className="font-display text-xl text-card-foreground">{album.title}</h2>
-                <p className="mt-1 text-sm font-medium text-primary">
-                  {album.count} {album.count === 1 ? "Photo" : "Photos"}
-                </p>
-                {album.caption && album.caption !== album.title && (
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{album.caption}</p>
-                )}
-              </div>
-
-              <div className="mt-6">
-                <Button
-                  id={`view-gallery-btn-${album.slug}`}
-                  type="button"
-                  variant="outline"
-                  className="w-full rounded-full border-primary/20 text-primary transition-all hover:bg-primary hover:text-primary-foreground font-display text-sm"
+          <StaggerContainer staggerIntervalMs={80} className="grid gap-8 md:grid-cols-2">
+            {displayAlbums.map((album) => (
+              <div
+                key={album.slug}
+                id={`gallery-album-card-${album.slug}`}
+                className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/40"
+              >
+                <div
+                  className="relative h-72 w-full cursor-pointer overflow-hidden bg-muted"
                   onClick={() => setActiveAlbum(album)}
                 >
-                  View Gallery
-                </Button>
+                  <img
+                    src={album.coverImage}
+                    alt={album.title}
+                    loading="lazy"
+                    width={1200}
+                    height={900}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = campus;
+                    }}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur">
+                    {album.count} {album.count === 1 ? "Photo" : "Photos"}
+                  </span>
+                </div>
+
+                <div className="flex flex-1 flex-col justify-between p-6">
+                  <div>
+                    <h2 className="font-display text-xl text-card-foreground font-bold">
+                      {album.title}
+                    </h2>
+                    <p className="mt-1 text-sm font-medium text-primary">
+                      {album.count} {album.count === 1 ? "Photo" : "Photos"}
+                    </p>
+                    {album.caption && album.caption !== album.title && (
+                      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                        {album.caption}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-6">
+                    <Button
+                      id={`view-gallery-btn-${album.slug}`}
+                      type="button"
+                      variant="outline"
+                      className="w-full rounded-full border-primary/20 text-primary transition-all duration-200 hover:bg-primary hover:text-primary-foreground font-display text-sm active:scale-[0.98]"
+                      onClick={() => setActiveAlbum(album)}
+                    >
+                      View Gallery
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </section>
+            ))}
+          </StaggerContainer>
+        </section>
+      </RevealOnScroll>
 
       {/* Album Popup Gallery */}
       <MediaViewerModal

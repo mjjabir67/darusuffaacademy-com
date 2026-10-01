@@ -12,6 +12,7 @@ import {
 } from "@/lib/cms";
 import { Button } from "@/components/ui/button";
 import { MediaViewerModal } from "@/components/site/MediaViewerModal";
+import { RevealOnScroll, StaggerContainer } from "@/components/site/AnimationUtils";
 
 export const Route = createFileRoute("/news")({
   head: () => ({
@@ -56,76 +57,88 @@ function News() {
       intro="Camps, fests and programmes from the campus at Vadeesunnah."
     >
       {announcements && announcements.length > 0 && (
-        <section className="mx-auto max-w-4xl px-5 pt-16">
-          <div className="space-y-4">
-            {announcements.map((a) => (
-              <div
-                key={a.id}
-                className="rounded-2xl border border-secondary/30 bg-secondary/10 p-5"
-              >
-                <p className="font-display text-lg">{a.title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <RevealOnScroll animation="fade-up">
+          <section className="mx-auto max-w-4xl px-5 pt-16">
+            <StaggerContainer staggerIntervalMs={80} className="space-y-4">
+              {announcements.map((a) => (
+                <div
+                  key={a.id}
+                  className="rounded-2xl border border-secondary/30 bg-secondary/10 p-5 transition-all duration-300 hover:bg-secondary/15"
+                >
+                  <p className="font-display text-lg font-bold">{a.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>
+                </div>
+              ))}
+            </StaggerContainer>
+          </section>
+        </RevealOnScroll>
       )}
 
-      <section className="mx-auto max-w-4xl space-y-8 px-5 py-20">
-        {isLoading && <p className="text-muted-foreground">Loading updates...</p>}
+      <RevealOnScroll animation="fade-up">
+        <section className="mx-auto max-w-4xl space-y-8 px-5 py-20">
+          {isLoading && <p className="text-muted-foreground">Loading updates...</p>}
 
-        {!isLoading && (!posts || posts.length === 0) && (
-          <p className="text-muted-foreground">No updates have been published yet.</p>
-        )}
+          {!isLoading && (!posts || posts.length === 0) && (
+            <p className="text-muted-foreground">No updates have been published yet.</p>
+          )}
 
-        {posts?.map((item) => (
-          <article key={item.id} id={item.slug} className="card-soft scroll-mt-24 p-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
-                  {KIND_LABEL[item.kind] ?? item.kind}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {item.event_time || formatDate(item.event_date ?? item.created_at)}
-                </span>
-                {item.location && (
-                  <span className="text-sm text-muted-foreground">· {item.location}</span>
-                )}
-              </div>
-
-              {/* Event Media Button */}
-              <Button
-                id={`event-media-btn-${item.slug}`}
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full gap-2 text-xs font-display transition-all hover:bg-secondary hover:text-secondary-foreground"
-                onClick={() => setSelectedEvent(item)}
+          <StaggerContainer staggerIntervalMs={80} className="space-y-8">
+            {posts?.map((item) => (
+              <article
+                key={item.id}
+                id={item.slug}
+                className="card-soft scroll-mt-24 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40 group"
               >
-                <Images className="h-3.5 w-3.5" />
-                <span>Media</span>
-              </Button>
-            </div>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground font-semibold">
+                      {KIND_LABEL[item.kind] ?? item.kind}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {item.event_time || formatDate(item.event_date ?? item.created_at)}
+                    </span>
+                    {item.location && (
+                      <span className="text-sm text-muted-foreground">· {item.location}</span>
+                    )}
+                  </div>
 
-            <h2 className="mt-4 font-display text-3xl">{item.title}</h2>
-            {item.image_url && (
-              <img
-                src={item.image_url}
-                alt={item.title}
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.style.display = "none";
-                }}
-                className="mt-5 max-h-80 w-full rounded-2xl object-cover"
-              />
-            )}
-            <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground">
-              {item.body || item.summary}
-            </p>
-          </article>
-        ))}
-      </section>
+                  {/* Event Media Button */}
+                  <Button
+                    id={`event-media-btn-${item.slug}`}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full gap-2 text-xs font-display transition-all duration-200 hover:bg-secondary hover:text-secondary-foreground active:scale-[0.98]"
+                    onClick={() => setSelectedEvent(item)}
+                  >
+                    <Images className="h-3.5 w-3.5" />
+                    <span>Media</span>
+                  </Button>
+                </div>
+
+                <h2 className="mt-4 font-display text-3xl font-bold">{item.title}</h2>
+                {item.image_url && (
+                  <div className="mt-5 overflow-hidden rounded-2xl">
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.style.display = "none";
+                      }}
+                      className="max-h-80 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground">
+                  {item.body || item.summary}
+                </p>
+              </article>
+            ))}
+          </StaggerContainer>
+        </section>
+      </RevealOnScroll>
 
       {/* Event Media Viewer / No Media Popup */}
       <MediaViewerModal

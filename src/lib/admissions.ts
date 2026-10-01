@@ -208,6 +208,30 @@ export async function submitAdmissionApplication(
     );
   }
 
+  // Sync with site_settings admission_applications if possible
+  try {
+    const { data: settingsData } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "admission_applications")
+      .maybeSingle();
+
+    const existingList =
+      settingsData?.value && Array.isArray(settingsData.value)
+        ? (settingsData.value as AdmissionApplication[])
+        : [];
+
+    await supabase.from("site_settings").upsert(
+      {
+        key: "admission_applications",
+        value: [applicationPayload, ...existingList],
+      },
+      { onConflict: "key" },
+    );
+  } catch {
+    // Non-fatal if anon
+  }
+
   // Local storage cache
   try {
     const cached = JSON.parse(localStorage.getItem("darusuffa_my_admissions") || "[]");
@@ -233,17 +257,19 @@ export async function fetchAdmissionApplications(): Promise<AdmissionApplication
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
-    const res = await fetch("/api/admissions/applications", {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-    const contentType = res.headers.get("content-type") || "";
-    if (res.ok && contentType.includes("application/json")) {
-      const json = await res.json();
-      if (Array.isArray(json.applications)) {
-        for (const app of json.applications) {
-          if (app && app.id && !seenIds.has(app.id)) {
-            seenIds.add(app.id);
-            result.push(app);
+    if (token) {
+      const res = await fetch("/api/admissions/applications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const contentType = res.headers.get("content-type") || "";
+      if (res.ok && contentType.includes("application/json")) {
+        const json = await res.json().catch(() => null);
+        if (json && Array.isArray(json.applications)) {
+          for (const app of json.applications) {
+            if (app && app.id && !seenIds.has(app.id)) {
+              seenIds.add(app.id);
+              result.push(app);
+            }
           }
         }
       }
